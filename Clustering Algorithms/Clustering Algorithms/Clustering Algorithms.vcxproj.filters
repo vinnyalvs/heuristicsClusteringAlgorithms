@@ -30,10 +30,16 @@
     <ClInclude Include="KMeans.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Construtive.h">
+    <ClInclude Include="LocalSearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LocalSearch.h">
+    <ClInclude Include="Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constructive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +56,16 @@
     <ClCompile Include="KMeans.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Construtive.cpp">
+    <ClCompile Include="LocalSearch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LocalSearch.cpp">
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Constructive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

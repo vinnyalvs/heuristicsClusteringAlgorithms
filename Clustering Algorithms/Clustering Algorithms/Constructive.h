@@ -1,4 +1,6 @@
 #pragma once
+#include "ShortSolution.h"
+#include <stack>
 enum {
 	maxV = 300
 };
@@ -62,14 +64,23 @@ public:
 	int getNumComponents();
 	void buildSolution();
 	bool hasCircle();
+	void buildClusters();
 private:
-	void unionSETs(int idX, int idY, int parentX, int parentY);
+	int unionSETs(int idX, int idY);
 	int find(int id);
 	double **mat;
 	int numVertex;
 	vector <No> Graph;
 	vector <Edge> candidatesEdges;
+	vector <Edge> edgesInSolution;
 	vector <int> parents;
+	vector <struct subset> subsets;
+	ShortSolution solution;
 	int numConvexComponents;
 	int numClusters;
+};
+
+struct subset {
+	int parent;
+	int rank;
 };

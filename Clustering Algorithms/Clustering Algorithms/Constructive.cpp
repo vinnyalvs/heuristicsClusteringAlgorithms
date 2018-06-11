@@ -78,33 +78,91 @@ void Constructive::buildSolution()
 
 bool Constructive::hasCircle()
 {
-	parents.assign(Graph.size(), -1); //inicia todo o array de "parents" com -1, os nós são raízes de suas subárvores
-	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
+	int numVertex = Graph.size();
+	int numEdges = candidatesEdges.size();
+	int i;
+	for (i=0; i < numVertex; ++i)
+	{
+		subsets[i].parent = i;
+		subsets[i].rank = 0;
+	}
+	i = 0;
+	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
 		int parentX = find(it->getHead());
 		int parentY = find(it->getTail());
 		if (parentX == parentY)
 			return true;
-		unionSETs(it->getHead(), it->getTail(),parentX,parentY);
+		unionSETs(it->getHead(), it->getTail());
 	}
 	return false;
 }
 
-void Constructive::unionSETs(int idX, int idY, int parentX, int parentY)
+void Constructive::buildClusters()
 {
-	if (parentX > parentY) {
-		parents[idY] = parentX;
+	solution = ShortSolution(Graph.size, numClusters);
+	subsets.reserve(numClusters);
+	numConvexComponents = Graph.size();
+	int i;
+	int numVertex = Graph.size();
+	int numEdges = candidatesEdges.size();
+	for (i = 0; i < numVertex; ++i)
+	{
+		subsets[i].parent = i;
+		subsets[i].rank = 0;
 	}
-	else {
-		parents[idX] = parentY;
+	i = 0;
+	vector <Edge>::iterator it = edgesInSolution.begin();
+	//it != edgesInSolution.end();
+	while (numConvexComponents >= numClusters) {
+		edgesInSolution.push_back(candidatesEdges[i]);
+		int parentX = find(it->getHead());
+		int parentY = find(it->getTail());
+		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
+			int clusterId = unionSETs(it->getHead(), it->getTail());
+			solution.addObject(it->getHead(), clusterId);
+			solution.addObject(it->getTail(), clusterId);
+		}
+		else {
+			edgesInSolution.pop_back();
+		}
+		i++;
+		it++;
 	}
+
+}
+
+int Constructive::unionSETs(int idX, int idY)
+{
+	int xroot = find(idX);
+	int yroot = find(idY);
+	numConvexComponents--;
+	// Attach smaller rank tree under root of high rank tree
+	// (Union by Rank)
+	if (subsets[xroot].rank < subsets[yroot].rank) {
+		subsets[xroot].parent = yroot;
+		return yroot;
+	}
+	else if (subsets[xroot].rank > subsets[yroot].rank){
+		subsets[yroot].parent = xroot;
+		return xroot;
+	}
+	else
+	{
+		subsets[yroot].parent = xroot;
+		subsets[xroot].rank++;
+		return xroot;
+	}
+	// If ranks are same, then make one as root and increment
+	// its rank by one
+	
 }
 
 int Constructive::find(int id)
 {
-	if (parents[id] == -1)
-		return id;
-	else
-		find(parents[id]);
+	if (subsets[id].parent != id)
+		subsets[id].parent = find(subsets[id].parent);
+
+	return subsets[id].parent;
 }
 
 void Constructive::buildGraph(vector <Object*> objects)

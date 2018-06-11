@@ -1,20 +1,23 @@
-#include "stdafx.h"
 #include "Constructive.h"
+#include <algorithm>
 
 
 
 
-Constructive::Constructive(int numVertex)
+Constructive::Constructive(int numVertex, int numClusters)
 {
 	Graph.reserve(numVertex);
 	//for (int i = 0; i < numVertex; i++)
-		//Graph[i].setArestaSize(numVertex);
+	//Graph[i].setArestaSize(numVertex);
 	this->numVertex = numVertex;
 	this->mat = new double*[numVertex];
 	for (int i = 0; i < numVertex; i++) {
 		mat[i] = new double[numVertex];
 	}
+	this->numClusters = numClusters;
+
 }
+
 
 Constructive::~Constructive()
 {
@@ -36,14 +39,72 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 void Constructive::showGraph()
 {
 	int i, j;
-	cout << Graph[32].getPesoAresta(180) << endl;
 	for (i = 0; i < numVertex; i++) {
 		for (j = i; j < numVertex; j++) {
-			//cout << Graph[i].getPesoAresta(j) << "  ";
+			cout << Graph[i].getWeightEdge(j) << "  ";
 		}
-		
+
 	}
-	cout << i*j << endl;
+
+}
+
+void Constructive::orderEdges()
+{
+	for (vector <No>::iterator it = Graph.begin(); it != Graph.end(); it++) {
+		vector <Edge> edge = it->getEdges();
+		for (vector <Edge>::iterator a = edge.begin() ; a != edge.end(); a++) {
+			candidatesEdges.push_back(*a);
+		}
+	}
+
+	sort(candidatesEdges.begin(), candidatesEdges.end(), orderFunction);
+
+}
+
+bool Constructive::orderFunction(Edge a, Edge b)
+{
+	return 	(a.getWeightEdge() < b.getWeightEdge());
+}
+
+int Constructive::getNumComponents()
+{
+	return numConvexComponents;
+}
+
+void Constructive::buildSolution()
+{
+
+}
+
+bool Constructive::hasCircle()
+{
+	parents.assign(Graph.size(), -1); //inicia todo o array de "parents" com -1, os nós são raízes de suas subárvores
+	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
+		int parentX = find(it->getHead());
+		int parentY = find(it->getTail());
+		if (parentX == parentY)
+			return true;
+		unionSETs(it->getHead(), it->getTail(),parentX,parentY);
+	}
+	return false;
+}
+
+void Constructive::unionSETs(int idX, int idY, int parentX, int parentY)
+{
+	if (parentX > parentY) {
+		parents[idY] = parentX;
+	}
+	else {
+		parents[idX] = parentY;
+	}
+}
+
+int Constructive::find(int id)
+{
+	if (parents[id] == -1)
+		return id;
+	else
+		find(parents[id]);
 }
 
 void Constructive::buildGraph(vector <Object*> objects)
@@ -61,36 +122,43 @@ void Constructive::buildGraph(vector <Object*> objects)
 		no.setPesoY((*it)->getNormDoubleAttr(1));
 		Graph.push_back(no);
 		for (j = i; j < numVertex; j++) {
-			//mat[i][j] = euclideanDistance(*it, *it2);
-			Graph[i].adicionaAresta(j, euclideanDistance(*it, *it2));
+			Graph[i].addEdge(j, euclideanDistance(*it, *it2),no.getID());
 			++it2;
 		}
 		++it;
 	}
 }
 
-Aresta::Aresta(int iD_No, float pesoA)
+Edge::Edge(int iD_No, float pesoA, int idHead)
 {
-	this->iD_No = iD_No;
+	this->tail = iD_No;
+	this->head = idHead;
 	pesoAresta = pesoA;
 }
 
-Aresta::~Aresta()
+Edge::~Edge()
 {
 }
 
-double Aresta::getPesoAresta()
+double Edge::getWeightEdge()
 {
 	return this->pesoAresta;
 }
 
-int Aresta::getIDNo()
+int Edge::getTail()
 {
-	return this->iD_No;
+	return this->tail;
+}
+
+int Edge::getHead()
+{
+	return this->head;
 }
 
 
-void Aresta::setPesoAresta(float peso)
+
+
+void Edge::setWeightEdge(float peso)
 {
 	this->pesoAresta = peso;
 }
@@ -106,7 +174,7 @@ No::~No()
 
 int No::getID()
 {
-	return this->iD;
+	return this->id;
 }
 
 int No::getGrau()
@@ -116,7 +184,12 @@ int No::getGrau()
 
 void No::setID(int id)
 {
-	this->iD = id;
+	this->id = id;
+}
+
+int No::getId()
+{
+	return this->id ;
 }
 
 void No::setGrau(int g)
@@ -134,27 +207,32 @@ void No::setPesoY(float pesoY)
 	this->pesoY = pesoY;
 }
 
-void No::setArestaSize(int size)
+void No::setNumEdges(int size)
 {
-	listaAresta.reserve(size);
+	edges.reserve(size);
 }
 
-void No::adicionaAresta(int id, double pesoA)
+void No::addEdge(int id, double pesoA, int idHead)
 {
-	Aresta* a = new Aresta(id, pesoA);
-	if (id == iD)
+	Edge* a = new Edge(id, pesoA, idHead);
+	if (id == id)
 		grau += 2;
 	else
 		grau += 1;
-	listaAresta.push_back(*a);
+	edges.push_back(*a);
 }
 
-void No::removeAresta(int id)
+vector <Edge> No::getEdges()
 {
-	listaAresta.erase(listaAresta.begin() + id);
+	return edges;
 }
 
-double No::getPesoAresta(int index)
+void No::removeEdge(int id)
 {
-	return listaAresta[index].getPesoAresta();
+	edges.erase(edges.begin() + id);
+}
+
+double No::getWeightEdge(int index)
+{
+	return edges[index].getWeightEdge();
 }

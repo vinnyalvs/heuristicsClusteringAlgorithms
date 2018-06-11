@@ -1,24 +1,27 @@
 #pragma once
-#include <iostream>
-#include <vector>
-using namespace std;
-typedef vector<int> objectGroup;
-
+#include "stdafx.h"
 class ShortSolution
 {
 public:
-	ShortSolution();
+	ShortSolution(int numObj, int numClusters);
 	~ShortSolution();
-	void addObject(int objectId,int clusterId);
+	void addObject(int objectId, int clusterId);
 	int getId();
-	void setId();
+	void setId(int id);
 	double getSilhouette();
-	void setSilhouette();
+	void Silhouette();
+	bool isObjectInCluster(int objId,int clusterId);
+	int getNumClusters();
+	int getNumObjs();
+	vector <vector<int>> getClusters();
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
-	vector <objectGroup> clusters; //for each cluster i have a subgroup of objects in it
+	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it
+	int **objByCluster;
 	int id; // solution id
-	double silhouette; //metric to define if a clustrization is good
-	// add closest vertexs
+	int numObj;
+	int numClusters;
+	double silhouette; //metric
+					   // add closest vertexs
 };
 

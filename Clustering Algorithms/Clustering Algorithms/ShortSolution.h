@@ -1,5 +1,8 @@
 #pragma once
 #include "stdafx.h"
+#include <vector>
+#include <iostream>
+using namespace std;
 class ShortSolution
 {
 public:
@@ -14,6 +17,7 @@ public:
 	int getNumClusters();
 	int getNumObjs();
 	vector <vector<int>> getClusters();
+	void showSolution();
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
 	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it

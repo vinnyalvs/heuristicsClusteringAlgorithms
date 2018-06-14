@@ -7,7 +7,8 @@ ShortSolution::ShortSolution(int numObj,int numClusters)
 	this->numObj = numObj;
 	this->numClusters = numClusters;
 	clusters.reserve(numClusters);
-	for (int i = 0; i < numObj; i++) {
+	
+	for (int i = 0; i < clusters.size(); i++) {
 		clusters[i].reserve(numObj);
 	}
 	objectByCluster.reserve(numClusters);
@@ -71,6 +72,16 @@ int ShortSolution::getNumObjs()
 vector<vector<int>> ShortSolution::getClusters()
 {
 	return clusters;
+}
+
+void ShortSolution::showSolution()
+{
+	for (int i = 0; i < clusters.size(); i++) {
+		for (int j = 0; j < clusters[i].size(); j++) {
+			cout << clusters[i][j] << " ";
+		}
+		cout << endl;
+	}
 }
 
 

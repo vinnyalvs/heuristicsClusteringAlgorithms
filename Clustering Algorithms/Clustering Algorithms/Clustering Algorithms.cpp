@@ -14,16 +14,19 @@ using namespace std;
 int main()
 {
 	Input* s = Input::getInstance();
-	s->readObjectInstances("matrix.txt");
+    s->readObjectInstances("matrix2.txt");
+	
 	s->normEntry();
-	//int size = s->getNumObjects();
-	Constructive *c = new Constructive(200);
+	int size = s->getNumObjects();
+	Constructive *c = new Constructive(size,2);
 	c->buildGraph(s->getObjects());
-	c->showGraph();
+	//c->showGraph();
+	c->orderEdges();
+	c->buildClusters();
+	//ShortSolution *sol = c->getSolution();
+	//sol->showSolution();
 
-
-
-
+	
     return 0;
 }
 

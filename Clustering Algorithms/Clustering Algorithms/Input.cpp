@@ -80,10 +80,10 @@ void Input::readObjectInstances(string file)
 
 		}
 		cout << "Leitura do arquivo concluida. Num Obj: " << m << endl;
-		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-			//cout << "Objeto: " << (*it)->getId() << "Attr: " << (*it)->getOrigDoubleAttr(0) << endl;
+		/*for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+			cout << "Objeto: " << (*it)->getId() << "Attr: " << (*it)->getOrigDoubleAttr(0) << endl;
 
-		}
+		}*/
 
 	}
 	else {
@@ -100,19 +100,17 @@ void Input::normEntry()
 		minDoubleAttrs[i] = getMinDoubleAttr(i);
 		maxDoubleAttrs[i] = getMaxDoubleAttr(i);
 	}
-	cout << "sakdjsakjdkasd" << endl;
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 		normAttrs[0] = (((*it)->getOrigDoubleAttr(0) - minDoubleAttrs[0]) / (maxDoubleAttrs[0] - minDoubleAttrs[0]));
 		(*it)->addNewDoubleNormAttr(normAttrs[0]);
 		normAttrs[1] = ((*it)->getOrigDoubleAttr(1) - minDoubleAttrs[1]) / (maxDoubleAttrs[1] - minDoubleAttrs[1]);
-		cout << normAttrs[1] << endl;
 		(*it)->addNewDoubleNormAttr(normAttrs[1]);
 	}
 
-	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+	/*for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 		//cout << "Objeto: " << (*it)->getId() << "Attr: " << (*it)->getNormDoubleAttr(1) << endl;
 
-	}
+	}*/
 
 	//TO DO: Save norm input to file
 	cout << "Entry normalized" << endl;

@@ -23,6 +23,10 @@ public:
 	int getTail();
 	int getHead();
 	void setWeightEdge(float peso);
+	bool operator<(const  Edge & other) //(1)
+	{
+		return pesoAresta < other.pesoAresta;
+	}
 };
 
 class No {
@@ -60,11 +64,12 @@ public:
 	double euclideanDistance(Object *a, Object *b);
 	void showGraph();
 	void orderEdges();
-	bool orderFunction(Edge a, Edge b);
+	bool orderFunction( Edge a,  Edge b);
 	int getNumComponents();
 	void buildSolution();
 	bool hasCircle();
 	void buildClusters();
+	ShortSolution *getSolution();
 private:
 	int unionSETs(int idX, int idY);
 	int find(int id);
@@ -75,7 +80,7 @@ private:
 	vector <Edge> edgesInSolution;
 	vector <int> parents;
 	vector <struct subset> subsets;
-	ShortSolution solution;
+	ShortSolution *solution;
 	int numConvexComponents;
 	int numClusters;
 };

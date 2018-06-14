@@ -6,14 +6,11 @@
 
 Constructive::Constructive(int numVertex, int numClusters)
 {
+	solution = new ShortSolution(numVertex,numClusters);
 	Graph.reserve(numVertex);
 	//for (int i = 0; i < numVertex; i++)
 	//Graph[i].setArestaSize(numVertex);
 	this->numVertex = numVertex;
-	this->mat = new double*[numVertex];
-	for (int i = 0; i < numVertex; i++) {
-		mat[i] = new double[numVertex];
-	}
 	this->numClusters = numClusters;
 
 }
@@ -57,13 +54,14 @@ void Constructive::orderEdges()
 		}
 	}
 
-	sort(candidatesEdges.begin(), candidatesEdges.end(), orderFunction);
+	sort(candidatesEdges.begin(), candidatesEdges.end());
+	
 
 }
 
 bool Constructive::orderFunction(Edge a, Edge b)
 {
-	return 	(a.getWeightEdge() < b.getWeightEdge());
+	return 	( a.getWeightEdge() <  b.getWeightEdge());
 }
 
 int Constructive::getNumComponents()
@@ -99,36 +97,43 @@ bool Constructive::hasCircle()
 
 void Constructive::buildClusters()
 {
-	solution = ShortSolution(Graph.size, numClusters);
-	subsets.reserve(numClusters);
+	//subsets.reserve(numVertex);
 	numConvexComponents = Graph.size();
 	int i;
 	int numVertex = Graph.size();
 	int numEdges = candidatesEdges.size();
+	subset newSet;
 	for (i = 0; i < numVertex; ++i)
 	{
-		subsets[i].parent = i;
-		subsets[i].rank = 0;
+		newSet.parent = i;
+		newSet.rank = 0;
+		subsets.push_back(newSet);
 	}
 	i = 0;
-	vector <Edge>::iterator it = edgesInSolution.begin();
+	edgesInSolution.reserve(candidatesEdges.size());
 	//it != edgesInSolution.end();
-	while (numConvexComponents >= numClusters) {
-		edgesInSolution.push_back(candidatesEdges[i]);
-		int parentX = find(it->getHead());
-		int parentY = find(it->getTail());
+	while (numConvexComponents > numClusters) {
+		int parentX = find(candidatesEdges[i].getHead());
+		int parentY = find(candidatesEdges[i].getTail());
 		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
-			int clusterId = unionSETs(it->getHead(), it->getTail());
-			solution.addObject(it->getHead(), clusterId);
-			solution.addObject(it->getTail(), clusterId);
-		}
-		else {
-			edgesInSolution.pop_back();
+			int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
+			edgesInSolution.push_back(candidatesEdges[i]);
 		}
 		i++;
-		it++;
 	}
 
+	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
+		cout << "parent Head"  << find(it->getHead()) << endl;
+		cout << "parent Tail" << find(it->getTail()) << endl;
+		//solution->addObject(it->getHead(), find(it->getHead()));
+		//solution->addObject(it->getTail(), find(it->getTail()));
+	}
+
+}
+
+ShortSolution *Constructive::getSolution()
+{
+	return this->solution ;
 }
 
 int Constructive::unionSETs(int idX, int idY)

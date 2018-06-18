@@ -18,14 +18,15 @@ int main()
 	
 	s->normEntry();
 	int size = s->getNumObjects();
-	Constructive *c = new Constructive(size,8);
-	c->buildGraph(s->getObjects());
-	//c->showGraph();
-	c->orderEdges();
-	c->buildClusters();
-	//ShortSolution *sol = c->getSolution();
-	//sol->showSolution();
-
+	for (int i = 1; i <= 10; i++) {
+		Constructive *c = new Constructive(size, i);
+		c->buildGraph(s->getObjects());
+		c->orderEdges();
+		c->buildClusters();
+		ShortSolution *sol = c->getSolution();
+		sol->showSolution();
+		cout << "------------------------------" << endl;
+	}
 	
     return 0;
 }

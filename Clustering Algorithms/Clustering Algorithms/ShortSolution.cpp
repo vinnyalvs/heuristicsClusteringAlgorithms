@@ -7,7 +7,8 @@ ShortSolution::ShortSolution(int numObj,int numClusters)
 	this->numObj = numObj;
 	this->numClusters = numClusters;
 	clusters.reserve(numClusters);
-	
+	vector <int> a;
+	clusters.assign(numClusters,a);
 	for (int i = 0; i < clusters.size(); i++) {
 		clusters[i].reserve(numObj);
 	}
@@ -23,7 +24,11 @@ ShortSolution::~ShortSolution()
 
 void ShortSolution::addObject(int objectId, int clusterId)
 {
+	
+
+	//cout << "objeto de id: " << objectId << "Esta sendo inserido no cluster: " << clusterId << endl;
 	clusters[clusterId].push_back(objectId);
+
 }
 
 int ShortSolution::getId()
@@ -76,7 +81,9 @@ vector<vector<int>> ShortSolution::getClusters()
 
 void ShortSolution::showSolution()
 {
+	cout << "Para " << clusters.size() << " clusters: " << endl;
 	for (int i = 0; i < clusters.size(); i++) {
+		cout << "Cluster " << i +  1 << " Contem " << clusters[i].size()  << " objetos" << endl;
 		for (int j = 0; j < clusters[i].size(); j++) {
 			cout << clusters[i][j] << " ";
 		}

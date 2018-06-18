@@ -80,6 +80,7 @@ private:
 	vector <Edge> edgesInSolution;
 	vector <int> parents;
 	vector <struct subset> subsets;
+	vector <struct cluster> clusters;
 	ShortSolution *solution;
 	int numConvexComponents;
 	int numClusters;
@@ -88,4 +89,11 @@ private:
 struct subset {
 	int parent;
 	int rank;
+	//talvez uma maneira de guardar o root do subconjunto seja interessante
+};
+
+struct cluster {
+	vector <int> objsId;
+	int idCluster;
+	int idClusterInSolution;
 };

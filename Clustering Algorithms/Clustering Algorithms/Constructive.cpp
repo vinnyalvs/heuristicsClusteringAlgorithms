@@ -8,8 +8,12 @@ Constructive::Constructive(int numVertex, int numClusters)
 {
 	solution = new ShortSolution(numVertex,numClusters);
 	Graph.reserve(numVertex);
-	//for (int i = 0; i < numVertex; i++)
-	//Graph[i].setArestaSize(numVertex);
+	cluster newCluster;
+	for (int i = 0; i < numClusters; i++) {
+		newCluster.idCluster = 0;
+		newCluster.idClusterInSolution = i;
+		clusters.push_back(newCluster);
+	}
 	this->numVertex = numVertex;
 	this->numClusters = numClusters;
 
@@ -102,6 +106,7 @@ void Constructive::buildClusters()
 	int i;
 	int numVertex = Graph.size();
 	int numEdges = candidatesEdges.size();
+	int e = 0;
 	subset newSet;
 	for (i = 0; i < numVertex; ++i)
 	{
@@ -109,31 +114,44 @@ void Constructive::buildClusters()
 		newSet.rank = 0;
 		subsets.push_back(newSet);
 	}
-	i = 200;
+	i = 0;
 	edgesInSolution.reserve(candidatesEdges.size());
 	//it != edgesInSolution.end();
 	while (numConvexComponents > numClusters) {
-		
 		int parentX = find(candidatesEdges[i].getHead());
 		int parentY = find(candidatesEdges[i].getTail());
 		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
 			int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
-			edgesInSolution.push_back(candidatesEdges[i]);
-			cout << "ClusterID: " << clusterId << endl;
-			cout << "ConvexCOmponents " << this->numConvexComponents << endl;
-			cout << "parent Head" << candidatesEdges[i].getHead() << endl;
-			cout << "parent Tail" << candidatesEdges[i].getTail() << endl;
 		}
 		i++;
 	}
-	
-	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
-		cout << "parent Head"  << find(it->getHead()) << endl;
-		cout << "parent Tail" << find(it->getTail()) << endl;
-		cout << endl;
-		//solution->addObject(it->getHead(), find(it->getHead()));
-		//solution->addObject(it->getTail(), find(it->getTail()));
+	int objId=0; // Contador para os ids dos objetos
+
+	for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
+			//cout << "Cluster: " << c->idCluster << endl;
+			//cout << "Cluster Solution " << c->idClusterInSolution << endl;
 	}
+
+
+	for (vector <struct subset>::iterator it = subsets.begin(); it != subsets.end(); it++) {
+		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
+			if (c->idCluster == 0) {
+				c->idCluster = find(it->parent);
+				solution->addObject(objId, c->idClusterInSolution);
+				break;
+			}
+			else if (c->idCluster == find(it->parent)) {
+				solution->addObject(objId, c->idClusterInSolution);
+				break;
+			}
+
+		}
+		objId++;
+	}
+
+	
+
+
 
 }
 

@@ -14,11 +14,11 @@ using namespace std;
 int main()
 {
 	Input* s = Input::getInstance();
-    s->readObjectInstances("matrix2.txt");
+    s->readObjectInstances("matrix.txt");
 	
 	s->normEntry();
 	int size = s->getNumObjects();
-	Constructive *c = new Constructive(size,2);
+	Constructive *c = new Constructive(size,8);
 	c->buildGraph(s->getObjects());
 	//c->showGraph();
 	c->orderEdges();

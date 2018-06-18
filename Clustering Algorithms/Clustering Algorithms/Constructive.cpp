@@ -109,22 +109,28 @@ void Constructive::buildClusters()
 		newSet.rank = 0;
 		subsets.push_back(newSet);
 	}
-	i = 0;
+	i = 200;
 	edgesInSolution.reserve(candidatesEdges.size());
 	//it != edgesInSolution.end();
 	while (numConvexComponents > numClusters) {
+		
 		int parentX = find(candidatesEdges[i].getHead());
 		int parentY = find(candidatesEdges[i].getTail());
 		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
 			int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
 			edgesInSolution.push_back(candidatesEdges[i]);
+			cout << "ClusterID: " << clusterId << endl;
+			cout << "ConvexCOmponents " << this->numConvexComponents << endl;
+			cout << "parent Head" << candidatesEdges[i].getHead() << endl;
+			cout << "parent Tail" << candidatesEdges[i].getTail() << endl;
 		}
 		i++;
 	}
-
+	
 	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
 		cout << "parent Head"  << find(it->getHead()) << endl;
 		cout << "parent Tail" << find(it->getTail()) << endl;
+		cout << endl;
 		//solution->addObject(it->getHead(), find(it->getHead()));
 		//solution->addObject(it->getTail(), find(it->getTail()));
 	}

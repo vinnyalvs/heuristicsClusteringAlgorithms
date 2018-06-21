@@ -14,14 +14,15 @@ using namespace std;
 int main()
 {
 	Input* s = Input::getInstance();
-    s->readObjectInstances("matrix.txt");
+    s->readObjectInstances("matrixO.txt");
 	
 	s->normEntry();
 	int size = s->getNumObjects();
-	for (int i = 1; i <= 10; i++) {
+	for (int i = 1; i <= 7; i++) {
 		Constructive *c = new Constructive(size, i);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
+		c->setRndParemeter(0.01);
 		c->buildClusters();
 		ShortSolution *sol = c->getSolution();
 		sol->showSolution();

@@ -16,6 +16,7 @@ Constructive::Constructive(int numVertex, int numClusters)
 	}
 	this->numVertex = numVertex;
 	this->numClusters = numClusters;
+	
 
 }
 
@@ -103,35 +104,38 @@ void Constructive::buildClusters()
 {
 	//subsets.reserve(numVertex);
 	numConvexComponents = Graph.size();
-	int i;
 	int numVertex = Graph.size();
 	int numEdges = candidatesEdges.size();
 	int e = 0;
 	subset newSet;
-	for (i = 0; i < numVertex; ++i)
+	for (int i = 0; i < numVertex; ++i)
 	{
 		newSet.parent = i;
 		newSet.rank = 0;
 		subsets.push_back(newSet);
 	}
-	i = 0;
 	edgesInSolution.reserve(candidatesEdges.size());
+	std::mt19937 mt(42);
 	//it != edgesInSolution.end();
+	int c = 15;
+	int j = 0;
 	while (numConvexComponents > numClusters) {
-		int parentX = find(candidatesEdges[i].getHead());
-		int parentY = find(candidatesEdges[i].getTail());
+		//cout << candidatesEdges.size() << endl;
+		uniform_int_distribution<int> linear_x(0, candidatesEdges.size() * rndParameter);
+		c++;
+		if (c > 20000000)
+			break;
+		j = linear_x(mt);
+		//cout << c << endl;
+		int parentX = find(candidatesEdges[j].getHead());
+		int parentY = find(candidatesEdges[j].getTail());
 		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
-			int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
+			int clusterId = unionSETs(candidatesEdges[j].getHead(), candidatesEdges[j].getTail());
+		//	candidatesEdges.erase(candidatesEdges.begin() + j);
 		}
-		i++;
+		//j++;
 	}
 	int objId=0; // Contador para os ids dos objetos
-
-	for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
-			//cout << "Cluster: " << c->idCluster << endl;
-			//cout << "Cluster Solution " << c->idClusterInSolution << endl;
-	}
-
 
 	for (vector <struct subset>::iterator it = subsets.begin(); it != subsets.end(); it++) {
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
@@ -158,6 +162,16 @@ void Constructive::buildClusters()
 ShortSolution *Constructive::getSolution()
 {
 	return this->solution ;
+}
+
+void Constructive::setRndParemeter(double rndParameter)
+{
+	this->rndParameter = rndParameter;
+}
+
+double Constructive::getParameter()
+{
+	return this->rndParameter;
 }
 
 int Constructive::unionSETs(int idX, int idY)
@@ -203,11 +217,13 @@ void Constructive::buildGraph(vector <Object*> objects)
 	it = objects.begin();
 	for (i = 0; i < numVertex; i++) {
 		it2 = it;
+		//cria um novo No
 		No no = No();
 		no.setID((*it)->getId());
 		no.setPesoX((*it)->getNormDoubleAttr(0));
 		no.setPesoY((*it)->getNormDoubleAttr(1));
 		Graph.push_back(no);
+		//para cada No calcula a distancia para os objetos da instancia
 		for (j = i; j < numVertex; j++) {
 			Graph[i].addEdge(j, euclideanDistance(*it, *it2),no.getID());
 			++it2;

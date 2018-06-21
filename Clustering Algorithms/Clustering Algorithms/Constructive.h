@@ -1,6 +1,7 @@
 #pragma once
 #include "ShortSolution.h"
-#include <stack>
+#include <random>
+#include <algorithm>
 enum {
 	maxV = 300
 };
@@ -70,11 +71,14 @@ public:
 	bool hasCircle();
 	void buildClusters();
 	ShortSolution *getSolution();
+	void setRndParemeter(double rndParameter);
+	double getParameter();
 private:
 	int unionSETs(int idX, int idY);
 	int find(int id);
 	double **mat;
 	int numVertex;
+	double rndParameter;
 	vector <No> Graph;
 	vector <Edge> candidatesEdges;
 	vector <Edge> edgesInSolution;

@@ -9,6 +9,7 @@ Constructive::Constructive(int numVertex, int numClusters)
 	solution = new ShortSolution(numVertex,numClusters);
 	Graph.reserve(numVertex);
 	cluster newCluster;
+	//Inicializo os clusters
 	for (int i = 0; i < numClusters; i++) {
 		newCluster.idCluster = 0;
 		newCluster.idClusterInSolution = i;
@@ -16,7 +17,14 @@ Constructive::Constructive(int numVertex, int numClusters)
 	}
 	this->numVertex = numVertex;
 	this->numClusters = numClusters;
-	
+	//Inicializo os subconjuntos
+	subset newSet;
+	for (int i = 0; i < numVertex; ++i)
+	{
+		newSet.parent = i;
+		newSet.rank = 0;
+		subsets.push_back(newSet);
+	}
 
 }
 
@@ -102,41 +110,35 @@ bool Constructive::hasCircle()
 
 void Constructive::buildClusters()
 {
-	//subsets.reserve(numVertex);
+	srand(time(0));
 	numConvexComponents = Graph.size();
 	int numVertex = Graph.size();
 	int numEdges = candidatesEdges.size();
-	int e = 0;
-	subset newSet;
-	for (int i = 0; i < numVertex; ++i)
-	{
-		newSet.parent = i;
-		newSet.rank = 0;
-		subsets.push_back(newSet);
-	}
-	edgesInSolution.reserve(candidatesEdges.size());
-	std::mt19937 mt(42);
-	//it != edgesInSolution.end();
-	int c = 15;
 	int j = 0;
+
+	vector <double> probabilityWeights;
+	edgesInSolution.reserve(candidatesEdges.size());
 	while (numConvexComponents > numClusters) {
-		//cout << candidatesEdges.size() << endl;
-		uniform_int_distribution<int> linear_x(0, candidatesEdges.size() * rndParameter);
-		c++;
-		if (c > 20000000)
-			break;
-		j = linear_x(mt);
-		//cout << c << endl;
+		int last = candidatesEdges.size() * rndParameter;
+		double sum = 0.0;
+		for (int c = 201; c <= last; c++)
+			sum += candidatesEdges[c].getWeightEdge();
+		for (int c = 201; c <= last; c++) 
+			probabilityWeights.push_back((sum - candidatesEdges[c].getWeightEdge()) / sum);
+		
+		cout << probabilityWeights.size();
+
+		j = 200 + ( rand() % last ); //200 é pq as 200 primeiras arestas tem valor 0, então elas não deviam estar na solução
 		int parentX = find(candidatesEdges[j].getHead());
 		int parentY = find(candidatesEdges[j].getTail());
-		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
+		if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que há um circulo
 			int clusterId = unionSETs(candidatesEdges[j].getHead(), candidatesEdges[j].getTail());
-		//	candidatesEdges.erase(candidatesEdges.begin() + j);
-		}
-		//j++;
+		candidatesEdges.erase(candidatesEdges.begin() + j);
 	}
-	int objId=0; // Contador para os ids dos objetos
 
+
+	int objId=0; // Contador para os ids dos objetos
+	//Faz a conversão das componentes conexas para clusters
 	for (vector <struct subset>::iterator it = subsets.begin(); it != subsets.end(); it++) {
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
 			if (c->idCluster == 0) {
@@ -152,11 +154,6 @@ void Constructive::buildClusters()
 		}
 		objId++;
 	}
-
-	
-
-
-
 }
 
 ShortSolution *Constructive::getSolution()
@@ -204,7 +201,7 @@ int Constructive::find(int id)
 {
 	if (subsets[id].parent != id)
 		subsets[id].parent = find(subsets[id].parent);
-
+	subsets[id].root = subsets[id].parent;
 	return subsets[id].parent;
 }
 

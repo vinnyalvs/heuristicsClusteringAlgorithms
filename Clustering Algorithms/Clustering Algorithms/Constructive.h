@@ -2,6 +2,8 @@
 #include "ShortSolution.h"
 #include <random>
 #include <algorithm>
+#include <cstdlib>
+#include <time.h>
 enum {
 	maxV = 300
 };
@@ -93,6 +95,7 @@ private:
 struct subset {
 	int parent;
 	int rank;
+	int root;
 	//talvez uma maneira de guardar o root do subconjunto seja interessante
 };
 

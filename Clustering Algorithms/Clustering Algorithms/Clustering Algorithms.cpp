@@ -8,21 +8,24 @@
 #include  "ShortSolution.h"
 #include  "LocalSearch.h"
 #include "math.h"
-
+#include <random>
 using namespace std;
 
 int main()
 {
 	Input* s = Input::getInstance();
     s->readObjectInstances("matrixO.txt");
+
+
+
 	
 	s->normEntry();
 	int size = s->getNumObjects();
-	for (int i = 1; i <= 7; i++) {
+	for (int i = 2; i <= 7; i++) {
 		Constructive *c = new Constructive(size, i);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
-		c->setRndParemeter(0.01);
+		c->setRndParemeter(0.15);
 		c->buildClusters();
 		ShortSolution *sol = c->getSolution();
 		sol->showSolution();

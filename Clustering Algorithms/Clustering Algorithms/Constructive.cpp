@@ -114,26 +114,69 @@ void Constructive::buildClusters()
 	numConvexComponents = Graph.size();
 	int numVertex = Graph.size();
 	int numEdges = candidatesEdges.size();
-	int j = 0;
-
+	double prob;
+	double sum = 0.0, sumprob=0;
+	double  ran;
 	vector <double> probabilityWeights;
 	edgesInSolution.reserve(candidatesEdges.size());
+
+	/*for all members of population
+		sum += fitness of this individual
+		end for
+
+		for all members of population
+			probability = sum of probabilities + (fitness / sum)
+			sum of probabilities += probability
+			end for
+
+			loop until new population is full
+			do this twice
+				number = Random between 0 and 1
+				for all members of population
+					if number > probability but less than next probability
+						then you have been selected
+						end for
+						end
+						create offspring
+						end loop*/
+
+
+	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
+		sum += it->getWeightEdge();
+	}
+	int c = 0;
+	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
+		probabilityWeights.push_back( sumprob + (candidatesEdges[c].getWeightEdge() / sum))  ;
+		sumprob += (candidatesEdges[c].getWeightEdge() / sum);
+		c++;
+	}
+
+	random_device seed;
+	mt19937 gen(seed());
+	uniform_real_distribution<float> dis(0, 0.02);
+	ran = rand() % 1;
+	
+	c = 0;
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
-		double sum = 0.0;
-		for (int c = 201; c <= last; c++)
-			sum += candidatesEdges[c].getWeightEdge();
-		for (int c = 201; c <= last; c++) 
-			probabilityWeights.push_back((sum - candidatesEdges[c].getWeightEdge()) / sum);
-		
-		cout << probabilityWeights.size();
+		double j;
+		j = dis(seed);
 
-		j = 200 + ( rand() % last ); //200 é pq as 200 primeiras arestas tem valor 0, então elas não deviam estar na solução
-		int parentX = find(candidatesEdges[j].getHead());
-		int parentY = find(candidatesEdges[j].getTail());
-		if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que há um circulo
-			int clusterId = unionSETs(candidatesEdges[j].getHead(), candidatesEdges[j].getTail());
-		candidatesEdges.erase(candidatesEdges.begin() + j);
+		for (int i = 200; i < last; i++) {
+			if (j > probabilityWeights[i] && j < probabilityWeights[i + 1]) {
+				int parentX = find(candidatesEdges[i].getHead());
+				int parentY = find(candidatesEdges[i].getTail());
+				if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que há um circulo
+					int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
+				candidatesEdges.erase(candidatesEdges.begin() + i);
+
+			}
+		}
+		
+
+
+		//200 é pq as 200 primeiras arestas tem valor 0, então elas não deviam estar na solução
+		
 	}
 
 
@@ -155,6 +198,9 @@ void Constructive::buildClusters()
 		objId++;
 	}
 }
+
+
+
 
 ShortSolution *Constructive::getSolution()
 {

@@ -20,12 +20,13 @@ int main()
 
 	
 	s->normEntry();
+	
 	int size = s->getNumObjects();
-	for (int i = 2; i <= 7; i++) {
+	for (int i = 2; i <= 10; i++) {
 		Constructive *c = new Constructive(size, i);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
-		c->setRndParemeter(0.15);
+		c->setRndParemeter(0.1);
 		c->buildClusters();
 		ShortSolution *sol = c->getSolution();
 		sol->showSolution();

@@ -117,52 +117,39 @@ void Constructive::buildClusters()
 	double prob;
 	double sum = 0.0, sumprob=0;
 	double  ran;
+
 	vector <double> probabilityWeights;
 	edgesInSolution.reserve(candidatesEdges.size());
 
-	/*for all members of population
-		sum += fitness of this individual
-		end for
-
-		for all members of population
-			probability = sum of probabilities + (fitness / sum)
-			sum of probabilities += probability
-			end for
-
-			loop until new population is full
-			do this twice
-				number = Random between 0 and 1
-				for all members of population
-					if number > probability but less than next probability
-						then you have been selected
-						end for
-						end
-						create offspring
-						end loop*/
-
-
+	
 	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
 		sum += it->getWeightEdge();
+		
 	}
 	int c = 0;
-	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
+	cout << candidatesEdges.size() << endl;
+	for (c = 0;c<105;c++) {
 		probabilityWeights.push_back( sumprob + (candidatesEdges[c].getWeightEdge() / sum))  ;
 		sumprob += (candidatesEdges[c].getWeightEdge() / sum);
-		c++;
 	}
-
+	
 	random_device seed;
 	mt19937 gen(seed());
-	uniform_real_distribution<float> dis(0, 0.02);
-	ran = rand() % 1;
-	
+	uniform_real_distribution<float> dis(0, 1);
+	ran = rand() % 1;	
 	c = 0;
+
+	for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
+		cout << *it << endl;
+	}
+
+
+
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
 		double j;
 		j = dis(seed);
-
-		for (int i = 200; i < last; i++) {
+		for (int i = 0; i <  last; i++) {
 			if (j > probabilityWeights[i] && j < probabilityWeights[i + 1]) {
 				int parentX = find(candidatesEdges[i].getHead());
 				int parentY = find(candidatesEdges[i].getTail());
@@ -172,9 +159,6 @@ void Constructive::buildClusters()
 
 			}
 		}
-		
-
-
 		//200 é pq as 200 primeiras arestas tem valor 0, então elas não deviam estar na solução
 		
 	}
@@ -267,7 +251,7 @@ void Constructive::buildGraph(vector <Object*> objects)
 		no.setPesoY((*it)->getNormDoubleAttr(1));
 		Graph.push_back(no);
 		//para cada No calcula a distancia para os objetos da instancia
-		for (j = i; j < numVertex; j++) {
+		for (j = i+1; j < numVertex; j++) {
 			Graph[i].addEdge(j, euclideanDistance(*it, *it2),no.getID());
 			++it2;
 		}

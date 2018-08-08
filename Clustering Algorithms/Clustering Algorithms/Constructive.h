@@ -87,6 +87,7 @@ private:
 	vector <int> parents;
 	vector <struct subset> subsets;
 	vector <struct cluster> clusters;
+	vector <int> objByCluster;
 	ShortSolution *solution;
 	int numConvexComponents;
 	int numClusters;

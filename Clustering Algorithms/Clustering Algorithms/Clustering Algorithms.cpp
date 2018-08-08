@@ -22,16 +22,16 @@ int main()
 	s->normEntry();
 	
 	int size = s->getNumObjects();
-	for (int i = 2; i <= 10; i++) {
-		Constructive *c = new Constructive(size, i);
+	//for (int i = 2; i <= 10; i++) {
+		Constructive *c = new Constructive(size, 10);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
 		c->setRndParemeter(0.1);
 		c->buildClusters();
 		ShortSolution *sol = c->getSolution();
-		sol->showSolution();
+		//Ssol->showSolution();
 		cout << "------------------------------" << endl;
-	}
+	//}
 	
     return 0;
 }

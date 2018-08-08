@@ -1,4 +1,4 @@
-#include "Constructive.h"
+ï»¿#include "Constructive.h"
 #include <algorithm>
 
 
@@ -25,6 +25,12 @@ Constructive::Constructive(int numVertex, int numClusters)
 		newSet.rank = 0;
 		subsets.push_back(newSet);
 	}
+	objByCluster.assign(numVertex, 0);
+	int a = 0;
+	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
+		*it = a;
+		a++;
+	}
 
 }
 
@@ -36,15 +42,7 @@ Constructive::~Constructive()
 	delete[] mat;
 }
 
-double Constructive::euclideanDistance(Object *a, Object *b)
-{
-	double dist = 0.0;
-	for (int i = 0; i < 2; i++) {
 
-		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
-	}
-	return sqrt(dist);
-}
 
 void Constructive::showGraph()
 {
@@ -126,25 +124,34 @@ void Constructive::buildClusters()
 		sum += it->getWeightEdge();
 		
 	}
+
 	int c = 0;
-	cout << candidatesEdges.size() << endl;
-	for (c = 0;c<105;c++) {
-		probabilityWeights.push_back( sumprob + (candidatesEdges[c].getWeightEdge() / sum))  ;
-		sumprob += (candidatesEdges[c].getWeightEdge() / sum);
+	for (c = 0;c<candidatesEdges.size();c++) {
+		//cout << candidatesEdges[c].getWeightEdge() << endl;
+		probabilityWeights.push_back(  (sum - candidatesEdges[c].getWeightEdge())   )  ;
+		//sumprob += (candidatesEdges[c].getWeightEdge() / sum);
 	}
 	
 	random_device seed;
 	mt19937 gen(seed());
-	uniform_real_distribution<float> dis(0, 1);
-	ran = rand() % 1;	
+	uniform_real_distribution<float> dis(0, 25);
+	ran = rand() %  (int)sum ;	
 	c = 0;
-
+	int last = candidatesEdges.size() * rndParameter;
+	int j;
+	cout << "SUm: " << sum << endl;
+	int count = 0;
 	for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
 		cout << *it << endl;
+		//j  = rand() % (int) *probabilityWeights.end();
+		//cout << "J:" <<  j << endl;
+		
 	}
+	
+	
+	
 
-
-
+/*
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
 		double j;
@@ -153,19 +160,19 @@ void Constructive::buildClusters()
 			if (j > probabilityWeights[i] && j < probabilityWeights[i + 1]) {
 				int parentX = find(candidatesEdges[i].getHead());
 				int parentY = find(candidatesEdges[i].getTail());
-				if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que há um circulo
+				if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que hÃ¡ um circulo
 					int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
 				candidatesEdges.erase(candidatesEdges.begin() + i);
 
 			}
 		}
-		//200 é pq as 200 primeiras arestas tem valor 0, então elas não deviam estar na solução
+		
 		
 	}
 
 
 	int objId=0; // Contador para os ids dos objetos
-	//Faz a conversão das componentes conexas para clusters
+	//Faz a conversÃ£o das componentes conexas para clusters
 	for (vector <struct subset>::iterator it = subsets.begin(); it != subsets.end(); it++) {
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
 			if (c->idCluster == 0) {
@@ -181,6 +188,45 @@ void Constructive::buildClusters()
 		}
 		objId++;
 	}
+
+
+
+	cout << "num Convex Comp: " << numConvexComponents << endl;
+	int clusterIndex = 0; // Contador para os ids dos objetos
+	int conta = 0;
+	//Faz a conversï¿½o das componentes conexas para clusters
+
+
+	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		vector <int>::iterator b;
+		for (b = objByCluster.begin(); b != c; b++) {
+			if (*c == *b)
+				break;
+		}
+		if (c == b) {
+			cout << *c << endl;
+			//clusters[clusterIndex].idCluster = *c;
+			clusterIndex++;
+		}
+
+
+	}
+	cout << "Cluster Index: " << clusterIndex << endl;
+
+	int count = 0;
+	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
+
+		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
+			if (c->idCluster == *it) {
+				solution->addObject(count + 1, c->idClusterInSolution);
+			}
+		}
+		count++;
+	}
+	*/
+
+
+
 }
 
 
@@ -247,8 +293,8 @@ void Constructive::buildGraph(vector <Object*> objects)
 		//cria um novo No
 		No no = No();
 		no.setID((*it)->getId());
-		no.setPesoX((*it)->getNormDoubleAttr(0));
-		no.setPesoY((*it)->getNormDoubleAttr(1));
+		no.setPesoX((*it)->getOrigDoubleAttr(0));
+		no.setPesoY((*it)->getOrigDoubleAttr(1));
 		Graph.push_back(no);
 		//para cada No calcula a distancia para os objetos da instancia
 		for (j = i+1; j < numVertex; j++) {
@@ -257,6 +303,17 @@ void Constructive::buildGraph(vector <Object*> objects)
 		}
 		++it;
 	}
+}
+
+double Constructive::euclideanDistance(Object *a, Object *b)
+{
+	double dist = 0.0;
+	// two is the dimension of the object
+	for (int i = 0; i < 2; i++) {
+
+		dist += pow((a->getOrigDoubleAttr(i) - b->getOrigDoubleAttr(i)), 2);
+	}
+	return sqrt(dist);
 }
 
 Edge::Edge(int iD_No, float pesoA, int idHead)

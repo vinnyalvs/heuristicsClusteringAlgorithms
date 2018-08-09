@@ -155,6 +155,7 @@ void Constructive::buildClusters()
 	
 
 	cout << "a" << endl;
+
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
 		double j;
@@ -165,8 +166,11 @@ void Constructive::buildClusters()
 			if (j <= *it) {
 				int parentX = find(candidatesEdges[i].getHead());
 				int parentY = find(candidatesEdges[i].getTail());
-				if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que há um circulo
+				if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
 					int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
+					objByCluster[candidatesEdges[i].getHead()] = parentX;
+					objByCluster[candidatesEdges[i].getTail()] = parentY;
+				}
 				candidatesEdges.erase(candidatesEdges.begin() + i);
 				break;
 
@@ -177,6 +181,9 @@ void Constructive::buildClusters()
 		
 	}
 
+	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		cout << *c << endl;
+	}
 	
 	/*int objId=0; // Contador para os ids dos objetos
 	//Faz a conversão das componentes conexas para clusters
@@ -195,32 +202,33 @@ void Constructive::buildClusters()
 		}
 		objId++;
 	}*/
-
+	cout << "--" << endl;
 
 
 	cout << "num Convex Comp: " << numConvexComponents << endl;
+	cout << "num Convex Comp: " << numClusters << endl;
 	int clusterIndex = 0; // Contador para os ids dos objetos
 	int conta = 0;
+	cout << "--fim--" << endl;
 	//Faz a convers�o das componentes conexas para clusters
-
-
 	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		//cout << *c << endl;
 		vector <int>::iterator b;
 		for (b = objByCluster.begin(); b != c; b++) {
 			if (*c == *b)
 				break;
 		}
 		if (c == b) {
-			cout << *c << endl;
-			clusters[clusterIndex].idCluster = *c;
+			//cout << *c << endl;
+			//clusters[clusterIndex].idCluster = *c;
 			clusterIndex++;
 		}
+		
 
 
 	}
-	cout << "Cluster Index: " << clusterIndex << endl;
-
-	
+	cout << "--" << endl;
+/*	cout << "Cluster Index: " << clusterIndex << endl;
 	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
 
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
@@ -229,7 +237,7 @@ void Constructive::buildClusters()
 			}
 		}
 		count++;
-	}
+	}*/
 	
 
 	
@@ -256,6 +264,7 @@ double Constructive::getParameter()
 
 int Constructive::unionSETs(int idX, int idY)
 {
+	//return the root of the SET
 	int xroot = find(idX);
 	int yroot = find(idY);
 	numConvexComponents--;
@@ -263,16 +272,19 @@ int Constructive::unionSETs(int idX, int idY)
 	// (Union by Rank)
 	if (subsets[xroot].rank < subsets[yroot].rank) {
 		subsets[xroot].parent = yroot;
+		cout << yroot << endl;
 		return yroot;
 	}
 	else if (subsets[xroot].rank > subsets[yroot].rank){
 		subsets[yroot].parent = xroot;
+		cout << yroot << endl;
 		return xroot;
 	}
 	else
 	{
 		subsets[yroot].parent = xroot;
 		subsets[xroot].rank++;
+		cout << yroot << endl;
 		return xroot;
 	}
 	// If ranks are same, then make one as root and increment

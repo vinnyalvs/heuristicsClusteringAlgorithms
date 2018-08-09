@@ -23,7 +23,7 @@ int main()
 	
 	int size = s->getNumObjects();
 	//for (int i = 2; i <= 10; i++) {
-		Constructive *c = new Constructive(size, 35);
+		Constructive *c = new Constructive(size, 15);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
 		c->setRndParemeter(0.1);

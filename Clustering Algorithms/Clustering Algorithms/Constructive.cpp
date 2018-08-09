@@ -119,59 +119,66 @@ void Constructive::buildClusters()
 	vector <double> probabilityWeights;
 	edgesInSolution.reserve(candidatesEdges.size());
 
-	
+	int count = 0;
 	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
-		sum += it->getWeightEdge();
+			sum += it->getWeightEdge();
+	}
+	cout << candidatesEdges.front().getWeightEdge() << endl;
+	int c = 0;
+	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
+		//cout << candidatesEdges[c].getWeightEdge() << endl;
+		double value = (100 / (it->getWeightEdge() / sum));
+		if (it->getWeightEdge() != 0) {
+			probabilityWeights.push_back(  value/pow(10,5) + sumprob) ;
+			sumprob = sumprob + ( value / pow(10, 5) ) ;
+			//cout << it->getWeightEdge() << endl;
+		}
 		
 	}
-
-	int c = 0;
-	for (c = 0;c<candidatesEdges.size();c++) {
-		//cout << candidatesEdges[c].getWeightEdge() << endl;
-		probabilityWeights.push_back(  (sum - candidatesEdges[c].getWeightEdge())   )  ;
-		//sumprob += (candidatesEdges[c].getWeightEdge() / sum);
-	}
 	
+	
+	
+	
+	cout << "Sum" << sumprob << endl;
 	random_device seed;
 	mt19937 gen(seed());
-	uniform_real_distribution<float> dis(0, 25);
-	ran = rand() %  (int)sum ;	
-	c = 0;
-	int last = candidatesEdges.size() * rndParameter;
+	uniform_real_distribution<float> dis(0, sumprob);
 	int j;
-	cout << "SUm: " << sum << endl;
-	int count = 0;
-	for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
-		cout << *it << endl;
-		//j  = rand() % (int) *probabilityWeights.end();
-		//cout << "J:" <<  j << endl;
-		
-	}
+	/*for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
+		cout <<  *it << endl;
+		// Verificar sumprob float
+		j  = rand() %  (int)sumprob  ;
+	   cout << "J:" <<  j << endl;
+	} */
 	
 	
 	
 
-/*
+	cout << "a" << endl;
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
 		double j;
+		// Verificar sumprob float
 		j = dis(seed);
-		for (int i = 0; i <  last; i++) {
-			if (j > probabilityWeights[i] && j < probabilityWeights[i + 1]) {
+		int i = 0;
+		for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
+			if (j <= *it) {
 				int parentX = find(candidatesEdges[i].getHead());
 				int parentY = find(candidatesEdges[i].getTail());
 				if (parentX != parentY)  //Se os "pais" deles forem os mesmos significa que há um circulo
 					int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
 				candidatesEdges.erase(candidatesEdges.begin() + i);
+				break;
 
 			}
+			i++;
 		}
 		
 		
 	}
 
-
-	int objId=0; // Contador para os ids dos objetos
+	
+	/*int objId=0; // Contador para os ids dos objetos
 	//Faz a conversão das componentes conexas para clusters
 	for (vector <struct subset>::iterator it = subsets.begin(); it != subsets.end(); it++) {
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
@@ -187,7 +194,7 @@ void Constructive::buildClusters()
 
 		}
 		objId++;
-	}
+	}*/
 
 
 
@@ -205,7 +212,7 @@ void Constructive::buildClusters()
 		}
 		if (c == b) {
 			cout << *c << endl;
-			//clusters[clusterIndex].idCluster = *c;
+			clusters[clusterIndex].idCluster = *c;
 			clusterIndex++;
 		}
 
@@ -213,7 +220,7 @@ void Constructive::buildClusters()
 	}
 	cout << "Cluster Index: " << clusterIndex << endl;
 
-	int count = 0;
+	
 	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
 
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
@@ -223,9 +230,9 @@ void Constructive::buildClusters()
 		}
 		count++;
 	}
-	*/
+	
 
-
+	
 
 }
 
@@ -293,8 +300,8 @@ void Constructive::buildGraph(vector <Object*> objects)
 		//cria um novo No
 		No no = No();
 		no.setID((*it)->getId());
-		no.setPesoX((*it)->getOrigDoubleAttr(0));
-		no.setPesoY((*it)->getOrigDoubleAttr(1));
+		no.setPesoX((*it)->getNormDoubleAttr(0));
+		no.setPesoY((*it)->getNormDoubleAttr(1));
 		Graph.push_back(no);
 		//para cada No calcula a distancia para os objetos da instancia
 		for (j = i+1; j < numVertex; j++) {
@@ -311,7 +318,7 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 	// two is the dimension of the object
 	for (int i = 0; i < 2; i++) {
 
-		dist += pow((a->getOrigDoubleAttr(i) - b->getOrigDoubleAttr(i)), 2);
+		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
 	}
 	return sqrt(dist);
 }

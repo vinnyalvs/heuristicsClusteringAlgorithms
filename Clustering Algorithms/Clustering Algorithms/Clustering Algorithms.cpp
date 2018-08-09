@@ -23,13 +23,13 @@ int main()
 	
 	int size = s->getNumObjects();
 	//for (int i = 2; i <= 10; i++) {
-		Constructive *c = new Constructive(size, 10);
+		Constructive *c = new Constructive(size, 35);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
 		c->setRndParemeter(0.1);
 		c->buildClusters();
 		ShortSolution *sol = c->getSolution();
-		//Ssol->showSolution();
+		sol->showSolution();
 		cout << "------------------------------" << endl;
 	//}
 	

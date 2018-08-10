@@ -91,4 +91,21 @@ void ShortSolution::showSolution()
 	}
 }
 
+double ShortSolution::calculateIntraClusterDistance(int clusterId)
+{
+	return 0.0;
+}
+
+double ShortSolution::calculateInterclusterDistance(int clusterId)
+{
+	return 0.0;
+}
+
+double ShortSolution::calculateRatio(int clusterId)
+{
+	return 0.0;
+}
+
+
+
 

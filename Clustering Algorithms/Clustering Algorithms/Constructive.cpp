@@ -114,52 +114,40 @@ void Constructive::buildClusters()
 	int numEdges = candidatesEdges.size();
 	double prob;
 	double sum = 0.0, sumprob=0;
-	double  ran;
-
+	double ran;
 	vector <double> probabilityWeights;
 	edgesInSolution.reserve(candidatesEdges.size());
-
 	int count = 0;
+	//soma todos os pesos de arestas
 	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
 			sum += it->getWeightEdge();
 	}
-	cout << candidatesEdges.front().getWeightEdge() << endl;
+
+	//Value: divide 100% pela porcentagem que a aresta corresponde na soma total
+	//para cada aresta com peso diferente de zero, colocamos no array o value dividido por uma "normalizacao" (pow) acresido com a somaAcumulada
 	int c = 0;
 	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
-		//cout << candidatesEdges[c].getWeightEdge() << endl;
 		double value = (100 / (it->getWeightEdge() / sum));
 		if (it->getWeightEdge() != 0) {
 			probabilityWeights.push_back(  value/pow(10,5) + sumprob) ;
 			sumprob = sumprob + ( value / pow(10, 5) ) ;
-			//cout << it->getWeightEdge() << endl;
 		}
 		
 	}
 	
-	
-	
-	
-	cout << "Sum" << sumprob << endl;
+	//Gera um distribuição aleatória entre 0 e a soma das probabilidades
+
 	random_device seed;
 	mt19937 gen(seed());
 	uniform_real_distribution<float> dis(0, sumprob);
 	int j;
-	/*for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
-		cout <<  *it << endl;
-		// Verificar sumprob float
-		j  = rand() %  (int)sumprob  ;
-	   cout << "J:" <<  j << endl;
-	} */
-	
-	
-	
 
-	cout << "a" << endl;
 
+	//Enquanto existem mais componentes conexas que clusters, sorteamos um valor entre 0 e sumprob, para cada elemento do array, se o valor sorteado for menor que esse elemento
+	//Tentamos montar a AGM
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
 		double j;
-		// Verificar sumprob float
 		j = dis(seed);
 		int i = 0;
 		for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
@@ -168,76 +156,49 @@ void Constructive::buildClusters()
 				int parentY = find(candidatesEdges[i].getTail());
 				if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
 					int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
-					objByCluster[candidatesEdges[i].getHead()] = parentX;
-					objByCluster[candidatesEdges[i].getTail()] = parentY;
 				}
 				candidatesEdges.erase(candidatesEdges.begin() + i);
 				break;
-
 			}
 			i++;
 		}
-		
-		
 	}
-
+	//O array ObjBYCluster guarda para cada elemento do array o seu "pai" na componente conexa
+	count = 0;
 	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
-		cout << *c << endl;
+		*c = find(count);
+		count++;
 	}
-	
-	/*int objId=0; // Contador para os ids dos objetos
-	//Faz a conversão das componentes conexas para clusters
-	for (vector <struct subset>::iterator it = subsets.begin(); it != subsets.end(); it++) {
-		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
-			if (c->idCluster == 0) {
-				c->idCluster = find(it->parent);
-				solution->addObject(objId, c->idClusterInSolution);
-				break;
-			}
-			else if (c->idCluster == find(it->parent)) {
-				solution->addObject(objId, c->idClusterInSolution);
-				break;
-			}
-
-		}
-		objId++;
-	}*/
-	cout << "--" << endl;
-
-
-	cout << "num Convex Comp: " << numConvexComponents << endl;
-	cout << "num Convex Comp: " << numClusters << endl;
+	//Faz a conversão das componentes conexas para clusters, para que seja possível guardar essas informações na solution
+	//Basicamente para cada elemento distinto do ObjByCluster, define para a componenteConexa um id no array clusters
 	int clusterIndex = 0; // Contador para os ids dos objetos
 	int conta = 0;
-	cout << "--fim--" << endl;
-	//Faz a convers�o das componentes conexas para clusters
+	
 	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
 		//cout << *c << endl;
 		vector <int>::iterator b;
 		for (b = objByCluster.begin(); b != c; b++) {
 			if (*c == *b)
 				break;
-		}
+		} 
 		if (c == b) {
-			//cout << *c << endl;
-			//clusters[clusterIndex].idCluster = *c;
+			cout << *c << endl;
+			clusters[clusterIndex].idCluster = *c;
 			clusterIndex++;
 		}
-		
-
-
 	}
-	cout << "--" << endl;
-/*	cout << "Cluster Index: " << clusterIndex << endl;
-	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
 
+	//Adciona os objetos na solução
+	count = 0;
+	cout << "Cluster Index: " << clusterIndex << endl;
+	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
 		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
 			if (c->idCluster == *it) {
 				solution->addObject(count + 1, c->idClusterInSolution);
 			}
 		}
 		count++;
-	}*/
+	}
 	
 
 	
@@ -272,19 +233,16 @@ int Constructive::unionSETs(int idX, int idY)
 	// (Union by Rank)
 	if (subsets[xroot].rank < subsets[yroot].rank) {
 		subsets[xroot].parent = yroot;
-		cout << yroot << endl;
 		return yroot;
 	}
 	else if (subsets[xroot].rank > subsets[yroot].rank){
 		subsets[yroot].parent = xroot;
-		cout << yroot << endl;
 		return xroot;
 	}
 	else
 	{
 		subsets[yroot].parent = xroot;
 		subsets[xroot].rank++;
-		cout << yroot << endl;
 		return xroot;
 	}
 	// If ranks are same, then make one as root and increment

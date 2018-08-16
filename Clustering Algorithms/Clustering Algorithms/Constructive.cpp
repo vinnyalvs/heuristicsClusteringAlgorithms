@@ -223,6 +223,53 @@ double Constructive::getParameter()
 	return this->rndParameter;
 }
 
+void Constructive::buildMST()
+{
+	int V = Graph.size();
+	int e = 0;  // An index variable, used for result[]
+	int i = 0;
+	while (e < V - 2)
+	{
+		
+		// Step 2: Pick the smallest edge. And increment 
+		// the index for next iteration
+		int x = find(candidatesEdges[i].getHead());
+		int y = find(candidatesEdges[i].getTail());
+		// If including this edge does't cause cycle,
+		// include it in result and increment the index 
+		// of result for next edge
+		try {
+			if (x != y)
+			{
+				edgesInSolution.push_back(candidatesEdges[i]);
+				unionSETs(x, y, 0);
+				e++;
+			}
+		}
+		catch (int ex) {
+			cout << "Ecx" << ex << endl;
+		}
+		i++;
+		// Else discard the next_edge
+	}
+
+	showEdgesInSol();
+
+
+}
+
+
+void Constructive::showEdgesInSol() {
+	cout << "Following are the edges in the constructed MST\n" << endl;
+	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++)
+		cout << it->getHead() << " -- " << it->getTail() << " == " << it->getWeightEdge() << endl;
+		
+}
+
+void Constructive::cutMST(int numclusters)
+{
+}
+
 int Constructive::unionSETs(int idX, int idY)
 {
 	//return the root of the SET
@@ -248,6 +295,37 @@ int Constructive::unionSETs(int idX, int idY)
 	// If ranks are same, then make one as root and increment
 	// its rank by one
 	
+}
+
+void Constructive::unionSETs(int idX, int idY, int type)
+{
+	//return the root of the SET
+	int xroot = find(idX);
+	int yroot = find(idY);
+	try
+	{
+		// Attach smaller rank tree under root of high rank tree
+		// (Union by Rank)
+		if (subsets[xroot].rank < subsets[yroot].rank) {
+			subsets[xroot].parent = yroot;
+		}
+		else if (subsets[xroot].rank > subsets[yroot].rank) {
+			subsets[yroot].parent = xroot;
+		}
+		else
+		{
+			subsets[yroot].parent = xroot;
+			subsets[xroot].rank++;
+		}
+	}
+	catch (int e)
+	{
+		cout << "An exception occurred. Exception Nr. " << e << '\n';
+	}
+	
+	// If ranks are same, then make one as root and increment
+	// its rank by one
+
 }
 
 int Constructive::find(int id)

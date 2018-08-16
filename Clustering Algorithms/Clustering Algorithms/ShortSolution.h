@@ -37,6 +37,6 @@ private:
 	vector <double> interClusterDistances;
 	// In the evaluation of our clustering algorithm, the ratio is: intra/inter, and we want to minimize it
 	//The clusterization with the best ratio
-	vector <double> ratios
+	vector <double> ratios;
 };
 

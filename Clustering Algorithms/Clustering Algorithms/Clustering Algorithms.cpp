@@ -18,7 +18,7 @@ int main()
 	s->normEntry();
 	
 	int size = s->getNumObjects();
-	for (int i = 10; i <= 15; i++) {
+	/*for (int i = 10; i <= 15; i++) {
 		Constructive *c = new Constructive(size, i);
 		c->buildGraph(s->getObjects());
 		c->orderEdges();
@@ -27,8 +27,11 @@ int main()
 		ShortSolution *sol = c->getSolution();
 		sol->showSolution();
 		cout << "------------------------------" << endl;
-	}
-	
+	} */
+	Constructive *c = new Constructive(size, 10);
+	c->buildGraph(s->getObjects());
+	c->orderEdges();
+	c->buildMST();
     return 0;
 }
 

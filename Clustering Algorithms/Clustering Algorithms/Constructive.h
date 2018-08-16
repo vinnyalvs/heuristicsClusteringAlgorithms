@@ -75,8 +75,12 @@ public:
 	ShortSolution *getSolution();
 	void setRndParemeter(double rndParameter);
 	double getParameter();
+	void buildMST();
+	void showEdgesInSol();
+	void cutMST(int numclusters);
 private:
 	int unionSETs(int idX, int idY);
+	void unionSETs(int idX, int idY, int type);
 	int find(int id);
 	double **mat;
 	int numVertex;

@@ -8,6 +8,7 @@ Constructive::Constructive(int numVertex, int numClusters)
 {
 	solution = new ShortSolution(numVertex,numClusters);
 	Graph.reserve(numVertex);
+	MSTGraph.reserve(numVertex);
 	cluster newCluster;
 	//Inicializo os clusters
 	for (int i = 0; i < numClusters; i++) {
@@ -230,17 +231,20 @@ void Constructive::buildMST()
 	int i = 0;
 	while (e < V - 2)
 	{
-		
 		// Step 2: Pick the smallest edge. And increment 
 		// the index for next iteration
-		int x = find(candidatesEdges[i].getHead());
-		int y = find(candidatesEdges[i].getTail());
+		int head = candidatesEdges[i].getHead();
+		int tail = candidatesEdges[i].getTail();
+		int x = find(head);
+		int y = find(tail);
 		// If including this edge does't cause cycle,
 		// include it in result and increment the index 
 		// of result for next edge
 		try {
 			if (x != y)
 			{
+				MSTGraph[head-1].addEdge(head, candidatesEdges[i].getWeightEdge(), tail);
+				//MSTGraph[tail-1].addEdge(tail, candidatesEdges[i].getWeightEdge(), head);
 				edgesInSolution.push_back(candidatesEdges[i]);
 				unionSETs(x, y, 0);
 				e++;
@@ -252,10 +256,9 @@ void Constructive::buildMST()
 		i++;
 		// Else discard the next_edge
 	}
+	//showEdgesInSol();
 
-	showEdgesInSol();
-
-
+	
 }
 
 
@@ -268,6 +271,40 @@ void Constructive::showEdgesInSol() {
 
 void Constructive::cutMST(int numclusters)
 {
+	//sort(candidatesEdges.begin(), candidatesEdges.end(),[](Edge& cmp1, Edge& cmp2)->bool {return cmp1 > cmp2; });
+
+
+	int numConvexComp = 0;
+	int i = edgesInSolution.size()-1;
+
+	while (numConvexComp < numClusters) {
+		int head = edgesInSolution[i].getHead();
+		int tail = edgesInSolution[i].getTail();
+		MSTGraph[head - 1].clusterParent = head;
+		//MSTGraph[tail - 1].clusterParent = tail;
+
+		vector <Edge> es = MSTGraph[head - 1].getEdges();
+		for (vector <Edge>::iterator it = es.begin(); it != es.end(); it++)
+			MSTGraph[it->getTail() - 1].clusterParent = head;
+		/*es = MSTGraph[tail - 1].getEdges();
+		for (vector <Edge>::iterator it = es.begin(); it != es.end(); it++)
+			MSTGraph[it->getTail() - 1].clusterParent = tail; */
+
+
+		edgesInSolution.pop_back();
+		numConvexComp++;
+		
+		i--;
+	}
+
+
+	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+		cout << it->clusterParent << endl;
+	}
+
+
+
+
 }
 
 int Constructive::unionSETs(int idX, int idY)
@@ -351,6 +388,7 @@ void Constructive::buildGraph(vector <Object*> objects)
 		no.setPesoX((*it)->getNormDoubleAttr(0));
 		no.setPesoY((*it)->getNormDoubleAttr(1));
 		Graph.push_back(no);
+		MSTGraph.push_back(no);
 		//para cada No calcula a distancia para os objetos da instancia
 		for (j = i+1; j < numVertex; j++) {
 			Graph[i].addEdge(j, euclideanDistance(*it, *it2),no.getID());
@@ -373,8 +411,8 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 
 Edge::Edge(int iD_No, float pesoA, int idHead)
 {
-	this->tail = iD_No;
-	this->head = idHead;
+	this->tail = iD_No; // no origem
+	this->head = idHead; // no destino
 	pesoAresta = pesoA;
 }
 

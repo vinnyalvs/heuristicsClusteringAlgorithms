@@ -30,6 +30,17 @@ public:
 	{
 		return pesoAresta < other.pesoAresta;
 	}
+
+	bool operator > (Edge& cmp1)
+	{
+		//Do your own calculations here
+		if (cmp1.pesoAresta < pesoAresta)
+		{
+			return true;
+		}
+
+		return false;
+	}
 };
 
 class No {
@@ -41,7 +52,9 @@ private:
 	double pesoX;
 	double pesoY;
 	vector <Edge> edges;
+	
 public:
+	int clusterParent;
 	No();
 	~No();
 	int getID();
@@ -51,6 +64,7 @@ public:
 	void setGrau(int g);
 	void setPesoX(float pesoX);
 	void setPesoY(float pesoY);
+	
 	void setNumEdges(int size);
 	void addEdge(int id, double pesoA, int idHead);
 	vector <Edge> getEdges();
@@ -86,6 +100,7 @@ private:
 	int numVertex;
 	double rndParameter;
 	vector <No> Graph;
+	vector <No> MSTGraph;
 	vector <Edge> candidatesEdges;
 	vector <Edge> edgesInSolution;
 	vector <int> parents;

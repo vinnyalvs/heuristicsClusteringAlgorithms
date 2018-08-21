@@ -98,11 +98,11 @@ bool Constructive::hasCircle()
 	}
 	i = 0;
 	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
-		int parentX = find(it->getHead());
-		int parentY = find(it->getTail());
+		int parentX = find(it->getSrc());
+		int parentY = find(it->getDest());
 		if (parentX == parentY)
 			return true;
-		unionSETs(it->getHead(), it->getTail());
+		unionSETs(it->getSrc(), it->getDest());
 	}
 	return false;
 }
@@ -153,10 +153,10 @@ void Constructive::buildClusters()
 		int i = 0;
 		for (vector <double>::iterator it = probabilityWeights.begin(); it != probabilityWeights.end(); it++) {
 			if (j <= *it) {
-				int parentX = find(candidatesEdges[i].getHead());
-				int parentY = find(candidatesEdges[i].getTail());
+				int parentX = find(candidatesEdges[i].getSrc());
+				int parentY = find(candidatesEdges[i].getDest());
 				if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
-					int clusterId = unionSETs(candidatesEdges[i].getHead(), candidatesEdges[i].getTail());
+					int clusterId = unionSETs(candidatesEdges[i].getSrc(), candidatesEdges[i].getDest());
 				}
 				candidatesEdges.erase(candidatesEdges.begin() + i);
 				break;
@@ -233,17 +233,17 @@ void Constructive::buildMST()
 	{
 		// Step 2: Pick the smallest edge. And increment 
 		// the index for next iteration
-		int head = candidatesEdges[i].getHead();
-		int tail = candidatesEdges[i].getTail();
-		int x = find(head);
-		int y = find(tail);
+		int src = candidatesEdges[i].getSrc();
+		int dest = candidatesEdges[i].getDest();
+		int x = find(src);
+		int y = find(dest);
 		// If including this edge does't cause cycle,
 		// include it in result and increment the index 
 		// of result for next edge
 		try {
 			if (x != y)
 			{
-				MSTGraph[head-1].addEdge(head, candidatesEdges[i].getWeightEdge(), tail);
+				MSTGraph[src-1].addEdge(src, candidatesEdges[i].getWeightEdge(), dest);
 				//MSTGraph[tail-1].addEdge(tail, candidatesEdges[i].getWeightEdge(), head);
 				edgesInSolution.push_back(candidatesEdges[i]);
 				unionSETs(x, y, 0);
@@ -256,7 +256,7 @@ void Constructive::buildMST()
 		i++;
 		// Else discard the next_edge
 	}
-	//showEdgesInSol();
+	showEdgesInSol();
 
 	
 }
@@ -265,7 +265,7 @@ void Constructive::buildMST()
 void Constructive::showEdgesInSol() {
 	cout << "Following are the edges in the constructed MST\n" << endl;
 	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++)
-		cout << it->getHead() << " -- " << it->getTail() << " == " << it->getWeightEdge() << endl;
+		cout << it->getSrc()  << "   -- " << it->getDest() << " == " << it->getWeightEdge() << endl;
 		
 }
 
@@ -273,38 +273,53 @@ void Constructive::cutMST(int numclusters)
 {
 	//sort(candidatesEdges.begin(), candidatesEdges.end(),[](Edge& cmp1, Edge& cmp2)->bool {return cmp1 > cmp2; });
 
+	bool *visited = new bool[numVertex];
+	for (int i = 0; i < numVertex; i++)
+		visited[i] = false;
 
 	int numConvexComp = 0;
 	int i = edgesInSolution.size()-1;
-
+	int clusterCount = 0;
 	while (numConvexComp < numClusters) {
-		int head = edgesInSolution[i].getHead();
-		int tail = edgesInSolution[i].getTail();
-		MSTGraph[head - 1].clusterParent = head;
-		//MSTGraph[tail - 1].clusterParent = tail;
+		int src = edgesInSolution[i].getSrc();
+		int dest = edgesInSolution[i].getDest();
+		
 
-		vector <Edge> es = MSTGraph[head - 1].getEdges();
-		for (vector <Edge>::iterator it = es.begin(); it != es.end(); it++)
-			MSTGraph[it->getTail() - 1].clusterParent = head;
-		/*es = MSTGraph[tail - 1].getEdges();
-		for (vector <Edge>::iterator it = es.begin(); it != es.end(); it++)
-			MSTGraph[it->getTail() - 1].clusterParent = tail; */
+		DFS(src, visited,src);
+		DFS(dest, visited, dest);
 
-
+		MSTGraph[src - 1].removeEdge(dest);
+		MSTGraph[dest - 1].removeEdge(src);
 		edgesInSolution.pop_back();
 		numConvexComp++;
-		
+		clusterCount++;
 		i--;
 	}
 
+	//system("cls");
+	//cout << "clusters" << endl;
+	/*for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+		cout << it->getID() <<  " " << it->clusterParent << endl;
+	}*/
 
+	
+
+	
+}
+
+void Constructive::DFS(int v, bool visited[], int clusterGroup)
+{
+	visited[v] = true;
+	
+
+	// Recur for all the vertices adjacent
+	// to this vertex
 	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
-		cout << it->clusterParent << endl;
+		if (!visited[it->getID()]) {
+			it->clusterParent = clusterGroup;
+			DFS(it->getID(), visited, clusterGroup);
+		}
 	}
-
-
-
-
 }
 
 int Constructive::unionSETs(int idX, int idY)
@@ -409,10 +424,10 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 	return sqrt(dist);
 }
 
-Edge::Edge(int iD_No, float pesoA, int idHead)
+Edge::Edge(int iD_No, float pesoA, int idDest)
 {
-	this->tail = iD_No; // no origem
-	this->head = idHead; // no destino
+	this->dest = idDest;  // no destino 
+	this->src = iD_No; // no origem
 	pesoAresta = pesoA;
 }
 
@@ -425,14 +440,14 @@ double Edge::getWeightEdge()
 	return this->pesoAresta;
 }
 
-int Edge::getTail()
+int Edge::getDest()
 {
-	return this->tail;
+	return this->dest;
 }
 
-int Edge::getHead()
+int Edge::getSrc()
 {
-	return this->head;
+	return this->src;
 }
 
 
@@ -509,7 +524,11 @@ vector <Edge> No::getEdges()
 
 void No::removeEdge(int id)
 {
-	edges.erase(edges.begin() + id);
+	for(vector <Edge>:: iterator it = edges.begin() ; it != edges.end(); it++)
+		if (it->getDest() == id) {
+			edges.erase(edges.begin() + id);
+			break;
+		}
 }
 
 double No::getWeightEdge(int index)

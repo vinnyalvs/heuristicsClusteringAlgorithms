@@ -17,14 +17,14 @@ using namespace std;
 class Edge {
 private:
 	double pesoAresta;
-	int tail; // no destino
-	int head;
+	int dest; // no destino
+	int src;
 public:
 	Edge(int iD_No, float pesoA, int idHead);
 	~Edge();
 	double getWeightEdge();
-	int getTail();
-	int getHead();
+	int getDest();
+	int getSrc();
 	void setWeightEdge(float peso);
 	bool operator<(const  Edge & other) //(1)
 	{
@@ -92,6 +92,7 @@ public:
 	void buildMST();
 	void showEdgesInSol();
 	void cutMST(int numclusters);
+	void DFS(int v, bool visited[],int clusterGroup);
 private:
 	int unionSETs(int idX, int idY);
 	void unionSETs(int idX, int idY, int type);

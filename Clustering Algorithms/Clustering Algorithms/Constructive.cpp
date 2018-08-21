@@ -47,12 +47,13 @@ Constructive::~Constructive()
 
 void Constructive::showGraph()
 {
-	int i, j;
-	for (i = 0; i < numVertex; i++) {
-		for (j = i; j < numVertex; j++) {
-			cout << Graph[i].getWeightEdge(j) << "  ";
+	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+		vector <Edge> edge = it->getEdges();
+		cout << it->getID() << "edges" << endl;
+		for (vector <Edge>::iterator a = edge.begin(); a != edge.end(); a++) {
+			cout << a->getDest() << " ";
 		}
-
+		cout << endl;
 	}
 
 }
@@ -244,7 +245,7 @@ void Constructive::buildMST()
 			if (x != y)
 			{
 				MSTGraph[src-1].addEdge(src, candidatesEdges[i].getWeightEdge(), dest);
-				//MSTGraph[tail-1].addEdge(tail, candidatesEdges[i].getWeightEdge(), head);
+				MSTGraph[dest-1].addEdge(dest, candidatesEdges[i].getWeightEdge(), src);
 				edgesInSolution.push_back(candidatesEdges[i]);
 				unionSETs(x, y, 0);
 				e++;
@@ -272,7 +273,7 @@ void Constructive::showEdgesInSol() {
 void Constructive::cutMST(int numclusters)
 {
 	//sort(candidatesEdges.begin(), candidatesEdges.end(),[](Edge& cmp1, Edge& cmp2)->bool {return cmp1 > cmp2; });
-
+	system("cls");
 	bool *visited = new bool[numVertex];
 	for (int i = 0; i < numVertex; i++)
 		visited[i] = false;
@@ -280,27 +281,32 @@ void Constructive::cutMST(int numclusters)
 	int numConvexComp = 0;
 	int i = edgesInSolution.size()-1;
 	int clusterCount = 0;
-	while (numConvexComp < numClusters) {
+
+
+	while (numConvexComp < numclusters) {
 		int src = edgesInSolution[i].getSrc();
 		int dest = edgesInSolution[i].getDest();
 		
+		MSTGraph[src - 1].removeEdge(dest);
+		MSTGraph[dest - 1].removeEdge(src);
 
 		DFS(src, visited,src);
 		DFS(dest, visited, dest);
 
-		MSTGraph[src - 1].removeEdge(dest);
-		MSTGraph[dest - 1].removeEdge(src);
-		edgesInSolution.pop_back();
+		
+		cout << src << endl;
+		cout << dest << endl;
+		cout << "--" << endl;
 		numConvexComp++;
 		clusterCount++;
 		i--;
 	}
 
 	//system("cls");
-	//cout << "clusters" << endl;
-	/*for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+	cout << "clusters" << endl;
+	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
 		cout << it->getID() <<  " " << it->clusterParent << endl;
-	}*/
+	}
 
 	
 
@@ -311,7 +317,7 @@ void Constructive::DFS(int v, bool visited[], int clusterGroup)
 {
 	visited[v] = true;
 	
-
+	cout << " " << clusterGroup;
 	// Recur for all the vertices adjacent
 	// to this vertex
 	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
@@ -406,7 +412,7 @@ void Constructive::buildGraph(vector <Object*> objects)
 		MSTGraph.push_back(no);
 		//para cada No calcula a distancia para os objetos da instancia
 		for (j = i+1; j < numVertex; j++) {
-			Graph[i].addEdge(j, euclideanDistance(*it, *it2),no.getID());
+			Graph[i].addEdge(no.getID(), euclideanDistance(*it, *it2),j);
 			++it2;
 		}
 		++it;
@@ -507,9 +513,9 @@ void No::setNumEdges(int size)
 	edges.reserve(size);
 }
 
-void No::addEdge(int id, double pesoA, int idHead)
+void No::addEdge(int id, double pesoA, int idDest)
 {
-	Edge* a = new Edge(id, pesoA, idHead);
+	Edge* a = new Edge(id, pesoA, idDest);
 	if (id == id)
 		grau += 2;
 	else
@@ -524,11 +530,16 @@ vector <Edge> No::getEdges()
 
 void No::removeEdge(int id)
 {
-	for(vector <Edge>:: iterator it = edges.begin() ; it != edges.end(); it++)
+	
+	int count = 0;
+	for (vector <Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+		//cout << it->getDest() << "-" << id << endl;
 		if (it->getDest() == id) {
-			edges.erase(edges.begin() + id);
 			break;
 		}
+		count++;
+	}
+	edges.erase(edges.begin() + count);
 }
 
 double No::getWeightEdge(int index)

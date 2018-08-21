@@ -32,6 +32,7 @@ int main()
 	c->buildGraph(s->getObjects());
 	c->orderEdges();
 	c->buildMST();
+	c->showGraph();
 	c->cutMST(10);
     return 0;
 }

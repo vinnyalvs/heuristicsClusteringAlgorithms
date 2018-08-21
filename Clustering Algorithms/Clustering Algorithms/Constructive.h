@@ -66,7 +66,7 @@ public:
 	void setPesoY(float pesoY);
 	
 	void setNumEdges(int size);
-	void addEdge(int id, double pesoA, int idHead);
+	void addEdge(int id, double pesoA, int idDest);
 	vector <Edge> getEdges();
 	void removeEdge(int id);
 	double getWeightEdge(int index);

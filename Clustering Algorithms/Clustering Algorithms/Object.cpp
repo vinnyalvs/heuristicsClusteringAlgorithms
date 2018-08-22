@@ -132,6 +132,26 @@ Object *Object::getObject()
 	return this;
 }
 
+void Object::setDissimilaritySameCluster(double d)
+{
+	this->dissimilaritySameCluster = d;
+}
+
+double Object::getDissimilaritySameCluster()
+{
+	return this->dissimilaritySameCluster;
+}
+
+void Object::setDissimilarityOtherCluster(double d)
+{
+	this->dissimilaritySameCluster = d;
+}
+
+double Object::getDissimilarityOtherCluster()
+{
+	return this->dissimilaritySameCluster;
+}
+
 
 
 

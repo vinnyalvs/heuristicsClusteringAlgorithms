@@ -168,6 +168,10 @@ public:
 	*/
 	Object *getObject();
 
+	void setDissimilaritySameCluster(double d);
+	double getDissimilaritySameCluster();
+	void setDissimilarityOtherCluster(double d);
+	double getDissimilarityOtherCluster();
 
 private:
 
@@ -185,7 +189,8 @@ private:
 	vector <double>		normDoubleAttrs;
 	vector <int>		normIntAttrs;
 
-
+	double dissimilaritySameCluster;
+	double dissimilarityOtherClusters;
 
 
 

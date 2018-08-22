@@ -2,15 +2,9 @@
 #pragma once
 #include "Object.h";
 
-class KMeansCluster {
-private:
-	int idCluster;
-	vector <Object*> objects;
-public:
-	void addObject(Object *obj);
-	void removeObject(Object *obj);
 
-};
+
+
 class KMeans
 {
 public:
@@ -29,7 +23,6 @@ public:
 private:
 	int k; //num of clusters;
 	int valuesTotal, objectsTotal, maxInterations;
-	vector <KMeansCluster> clusters;
 	vector <Object*> objects;
 	vector <Object> means;
 	double maximaX, maximaY;

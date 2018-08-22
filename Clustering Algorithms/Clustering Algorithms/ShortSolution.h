@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include <vector>
 #include <iostream>
+#include "Object.h"
+#include <limits>
 using namespace std;
 class ShortSolution
 {
@@ -12,10 +14,12 @@ public:
 	int getId();
 	void setId(int id);
 	double getSilhouette();
-	void Silhouette();
+	double euclideanDistance(Object * a, Object * b);
+	void calculateSilhouette();
 	bool isObjectInCluster(int objId,int clusterId);
 	int getNumClusters();
 	int getNumObjs();
+	void setObjects(vector<Object*> objs);
 	vector <vector<int>> getClusters();
 	void showSolution();
 	double calculateIntraClusterDistance(int clusterId);
@@ -38,5 +42,6 @@ private:
 	// In the evaluation of our clustering algorithm, the ratio is: intra/inter, and we want to minimize it
 	//The clusterization with the best ratio
 	vector <double> ratios;
+	vector <Object*> objs;
 };
 

@@ -147,14 +147,3 @@ void KMeans::showInfo()
 
 }
 
-
-void KMeansCluster::addObject(Object * obj)
-{
-
-	objects.push_back(obj);
-}
-
-void KMeansCluster::removeObject(Object * obj)
-{
-	objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-}

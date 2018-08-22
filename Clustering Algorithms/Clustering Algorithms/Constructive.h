@@ -84,6 +84,7 @@ public:
 	bool orderFunction( Edge a,  Edge b);
 	int getNumComponents();
 	void buildSolution();
+	void testeCluster();
 	bool hasCircle();
 	void buildClusters();
 	ShortSolution *getSolution();
@@ -94,8 +95,7 @@ public:
 	void cutMST(int numclusters);
 	void DFS(int v, bool visited[],int clusterGroup);
 private:
-	int unionSETs(int idX, int idY);
-	void unionSETs(int idX, int idY, int type);
+	void unionSETs(int idX, int idY);
 	int find(int id);
 	double **mat;
 	int numVertex;
@@ -116,8 +116,6 @@ private:
 struct subset {
 	int parent;
 	int rank;
-	int root;
-	//talvez uma maneira de guardar o root do subconjunto seja interessante
 };
 
 struct cluster {

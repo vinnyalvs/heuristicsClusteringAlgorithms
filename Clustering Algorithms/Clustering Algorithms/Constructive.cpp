@@ -157,7 +157,7 @@ void Constructive::buildClusters()
 				int parentX = find(candidatesEdges[i].getSrc());
 				int parentY = find(candidatesEdges[i].getDest());
 				if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que há um circulo
-					int clusterId = unionSETs(candidatesEdges[i].getSrc(), candidatesEdges[i].getDest());
+					unionSETs(candidatesEdges[i].getSrc(), candidatesEdges[i].getDest());
 				}
 				candidatesEdges.erase(candidatesEdges.begin() + i);
 				break;
@@ -247,7 +247,7 @@ void Constructive::buildMST()
 				MSTGraph[src-1].addEdge(src, candidatesEdges[i].getWeightEdge(), dest);
 				MSTGraph[dest-1].addEdge(dest, candidatesEdges[i].getWeightEdge(), src);
 				edgesInSolution.push_back(candidatesEdges[i]);
-				unionSETs(x, y, 0);
+				unionSETs(x, y);
 				e++;
 			}
 		}
@@ -328,7 +328,7 @@ void Constructive::DFS(int v, bool visited[], int clusterGroup)
 	}
 }
 
-int Constructive::unionSETs(int idX, int idY)
+void Constructive::unionSETs(int idX, int idY)
 {
 	//return the root of the SET
 	int xroot = find(idX);
@@ -338,59 +338,31 @@ int Constructive::unionSETs(int idX, int idY)
 	// (Union by Rank)
 	if (subsets[xroot].rank < subsets[yroot].rank) {
 		subsets[xroot].parent = yroot;
-		return yroot;
+
 	}
 	else if (subsets[xroot].rank > subsets[yroot].rank){
 		subsets[yroot].parent = xroot;
-		return xroot;
+
 	}
 	else
 	{
 		subsets[yroot].parent = xroot;
 		subsets[xroot].rank++;
-		return xroot;
+
 	}
 	// If ranks are same, then make one as root and increment
 	// its rank by one
 	
 }
 
-void Constructive::unionSETs(int idX, int idY, int type)
-{
-	//return the root of the SET
-	int xroot = find(idX);
-	int yroot = find(idY);
-	try
-	{
-		// Attach smaller rank tree under root of high rank tree
-		// (Union by Rank)
-		if (subsets[xroot].rank < subsets[yroot].rank) {
-			subsets[xroot].parent = yroot;
-		}
-		else if (subsets[xroot].rank > subsets[yroot].rank) {
-			subsets[yroot].parent = xroot;
-		}
-		else
-		{
-			subsets[yroot].parent = xroot;
-			subsets[xroot].rank++;
-		}
-	}
-	catch (int e)
-	{
-		cout << "An exception occurred. Exception Nr. " << e << '\n';
-	}
-	
-	// If ranks are same, then make one as root and increment
-	// its rank by one
 
-}
+
 
 int Constructive::find(int id)
 {
 	if (subsets[id].parent != id)
 		subsets[id].parent = find(subsets[id].parent);
-	subsets[id].root = subsets[id].parent;
+	
 	return subsets[id].parent;
 }
 
@@ -545,4 +517,70 @@ void No::removeEdge(int id)
 double No::getWeightEdge(int index)
 {
 	return edges[index].getWeightEdge();
+}
+
+void Constructive::testeCluster()
+{
+
+	srand(time(0));
+	numConvexComponents = Graph.size();
+	int numVertex = Graph.size();
+	int numEdges = candidatesEdges.size();
+	vector <Edge> auxCandidatesEdges = candidatesEdges;
+	int j = 0;
+	edgesInSolution.reserve(auxCandidatesEdges.size());
+
+
+	while (numConvexComponents > numClusters) {
+		int last = auxCandidatesEdges.size() * rndParameter;
+		//cout << j << endl;
+		j = ceil((rand() % last));
+		int parentX = find(auxCandidatesEdges[j].getSrc());
+		int parentY = find(auxCandidatesEdges[j].getDest());
+		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que h� um circulo
+			unionSETs(auxCandidatesEdges[j].getSrc(), auxCandidatesEdges[j].getDest());
+		}
+		auxCandidatesEdges.erase(auxCandidatesEdges.begin() + j);
+	}
+
+
+	int count = 0;;
+	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		*c = find(count);
+		count++;
+	}
+
+
+	cout << "num Convex Comp: " << numConvexComponents << endl;
+	int clusterIndex = 0; // Contador para os ids dos objetos
+						  //Faz a convers�o das componentes conexas para clusters
+
+
+	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		vector <int>::iterator b;
+		for (b = objByCluster.begin(); b != c; b++) {
+			if (*c == *b)
+				break;
+		}
+		if (c == b) {
+			cout << *c << endl;
+			clusters[clusterIndex].idCluster = *c;
+			clusterIndex++;
+		}
+
+
+	}
+
+	cout << "Cluster Index: " << clusterIndex << endl;
+	count = 0;
+	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
+
+		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
+			if (c->idCluster == *it) {
+				solution->addObject(count + 1, c->idClusterInSolution);
+			}
+		}
+		count++;
+	}
+
 }

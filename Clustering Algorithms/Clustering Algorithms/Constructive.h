@@ -85,6 +85,7 @@ public:
 	int getNumComponents();
 	void buildSolution();
 	void testeCluster();
+	void calculateSilhouette();
 	bool hasCircle();
 	void buildClusters();
 	ShortSolution *getSolution();
@@ -95,6 +96,8 @@ public:
 	void cutMST(int numclusters);
 	void DFS(int v, bool visited[],int clusterGroup);
 private:
+	double silhouette;
+	vector <Object*> objects;
 	void unionSETs(int idX, int idY);
 	int find(int id);
 	double **mat;
@@ -107,6 +110,7 @@ private:
 	vector <int> parents;
 	vector <struct subset> subsets;
 	vector <struct cluster> clusters;
+	vector <vector<int>> solutionClusters;
 	vector <int> objByCluster;
 	ShortSolution *solution;
 	int numConvexComponents;

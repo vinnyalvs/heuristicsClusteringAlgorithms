@@ -25,6 +25,9 @@ public:
 	double calculateIntraClusterDistance(int clusterId);
 	double calculateInterclusterDistance(int clusterId);
 	double calculateRatio(int clusterId);
+	void setObjectByCluster(vector <int> objectByCluster);
+	
+
 
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs

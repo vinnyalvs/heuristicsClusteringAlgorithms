@@ -66,7 +66,7 @@ void ShortSolution::calculateSilhouette()
 	double dissimilarityB = 0;
 	double s = 0; // Silhueta;
 				  //Para cada Objeto
-	int i=0;
+	int i = 0;
 	for (vector <Object*>::iterator it = objs.begin(); it != objs.end(); it++, i++) {
 		//Para cada objeto no cluster do objeto I
 		//Calculamos a dissimilaridade do objeto I para todos os obj de seu cluster
@@ -106,6 +106,8 @@ void ShortSolution::calculateSilhouette()
 		s += silhueta;
 	}
 
+	cout << dissimilarityA << endl;
+	cout << dissimilarityB << endl;
 
 	s = s / objs.size();
 
@@ -163,6 +165,11 @@ void ShortSolution::showSolution()
 		}
 		cout << endl;
 	}
+}
+
+void ShortSolution::setObjectByCluster(vector<int> objectByCluster)
+{
+	this->objectByCluster = objectByCluster;
 }
 
 

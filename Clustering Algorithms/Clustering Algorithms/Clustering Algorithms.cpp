@@ -20,23 +20,30 @@ int main()
 	int size = i->getNumObjects();
 
 	//Inicializa Construtivo, calcula peso das arestas  
-	Constructive *c = new Constructive(size, 10);
+	Constructive *c = new Constructive(size, 15);
 	c->buildGraph(i->getObjects());
 	c->orderEdges();
-	c->setRndParemeter(0.1);
-	c->buildClusters();
+	c->setRndParemeter(0.005);
+	//c->buildClusters();
+	c->testeCluster();
 	
+
 	ShortSolution *sol = c->getSolution();
 	sol->showSolution();
-	cout << "------------------------------" << endl;
+
+	
+	
+	
 }
 
 
 
 /*
-	KMeans K = KMeans(10, 2000, s->getMaxNormDoubleAttr(0), s->getMaxNormDoubleAttr(1), s->getMinNormDoubleAttr(0), s->getMinNormDoubleAttr(1), s->getObjects());
+	cout << "------------------------------" << endl;
+	KMeans K = KMeans(10, 1, i->getMaxNormDoubleAttr(0), i->getMaxNormDoubleAttr(1), i->getMinNormDoubleAttr(0), i->getMinNormDoubleAttr(1), i->getObjects());
 	K.initializeMeans();
-	K.showInfo();
+	ShortSolution *sol = K.getSolution();
+	sol->showSolution();
 
 */
 

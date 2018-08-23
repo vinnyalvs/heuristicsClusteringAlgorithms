@@ -17,6 +17,7 @@ KMeans::KMeans(int k, int maxInterations, double maximaX, double maximaY, double
 	this->minimaX = minimaX;
 	this->minimaY = minimaY;
 	this->objects = objects;
+	solution = new ShortSolution(objects.size(), k);
 }
 
 double KMeans::euclideanDistance(Object *a, Object *b)
@@ -34,7 +35,6 @@ void KMeans::initializeMeans()
 	//place centroid at random locations
 	std::mt19937 mt(42);
 	for (int i = 0; i < k; i++) {
-
 		means.push_back(i);
 		//uniform_real_distribution<float> linear_x(maximaX, minimaX);
 		//uniform_real_distribution<float> linear_y(maximaY, minimaY);
@@ -58,6 +58,7 @@ void KMeans::initializeMeans()
 			(*it)->setClusterId(mean);
 			++it;
 		}
+
 		//update each centroid for each object assign to it in previous step
 		//Quadratic O(n²)
 
@@ -72,7 +73,20 @@ void KMeans::initializeMeans()
 		}
 
 	}
+
+
+	
+
+
+	int count = 0;
+	for ( it = objects.begin(); it != objects.end(); it++) {
+		solution->addObject(count + 1, (*it)->getClusterId());
+		count++;
+	
+	}
+		
 }
+
 
 
 
@@ -145,5 +159,10 @@ void KMeans::showInfo()
 		++it;
 	}
 
+}
+
+ShortSolution * KMeans::getSolution()
+{
+	return solution;
 }
 

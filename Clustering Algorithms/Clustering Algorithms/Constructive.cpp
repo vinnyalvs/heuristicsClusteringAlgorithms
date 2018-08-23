@@ -87,26 +87,7 @@ void Constructive::buildSolution()
 
 }
 
-bool Constructive::hasCircle()
-{
-	int numVertex = Graph.size();
-	int numEdges = candidatesEdges.size();
-	int i;
-	for (i=0; i < numVertex; ++i)
-	{
-		subsets[i].parent = i;
-		subsets[i].rank = 0;
-	}
-	i = 0;
-	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
-		int parentX = find(it->getSrc());
-		int parentY = find(it->getDest());
-		if (parentX == parentY)
-			return true;
-		unionSETs(it->getSrc(), it->getDest());
-	}
-	return false;
-}
+
 
 void Constructive::buildClusters()
 {
@@ -203,11 +184,94 @@ void Constructive::buildClusters()
 	}
 	
 
-	
-
 }
 
+void Constructive::testeCluster()
+{
+	srand(time(0));
+	numConvexComponents = Graph.size();
+	int numVertex = Graph.size();
+	int numEdges = candidatesEdges.size();
+	vector <Edge> auxCandidatesEdges = candidatesEdges;
+	int j = 0;
+	edgesInSolution.reserve(auxCandidatesEdges.size());
 
+
+	double sumDist = 0;
+	int last = auxCandidatesEdges.size() * rndParameter;
+	for (; j <= last; j++) {
+		sumDist += (1-auxCandidatesEdges[j].getWeightEdge());
+	}
+
+	while (numConvexComponents > numClusters) {
+		//j = ceil((rand() % last));
+		
+		int k = ceil((rand() % (int)(sumDist*1000)));
+		int sum = 0;
+		cout << "k=" << k << endl << "sumDist=" << sumDist * 1000 << endl;
+		for (j = 0; sum + (1 - auxCandidatesEdges[j].getWeightEdge()) * 1000 < k && j < last; j++) {
+			sum += (1 - auxCandidatesEdges[j].getWeightEdge()) * 1000;
+			cout  << "j=" << j << "\tw=" << auxCandidatesEdges[j].getWeightEdge() << 
+				"\t1-w=" << 1-auxCandidatesEdges[j].getWeightEdge() << 
+				"\tparc=" << sum + (1-auxCandidatesEdges[j].getWeightEdge())*1000 << "\tk=" << k << endl << endl;
+		}
+
+		int parentX = find(auxCandidatesEdges[j].getSrc());
+		int parentY = find(auxCandidatesEdges[j].getDest());
+		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que h� um circulo
+			unionSETs(auxCandidatesEdges[j].getSrc(), auxCandidatesEdges[j].getDest());
+		}
+
+		sumDist -= (1 - auxCandidatesEdges[j].getWeightEdge());
+		auxCandidatesEdges.erase(auxCandidatesEdges.begin() + j);
+		if(last != auxCandidatesEdges.size() * rndParameter)
+			last = auxCandidatesEdges.size() * rndParameter;
+		else
+			sumDist += (1 - auxCandidatesEdges[last].getWeightEdge());
+	}
+
+
+	int count = 0;;
+	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		*c = find(count);
+		count++;
+	}
+
+
+	int clusterIndex = 0; // Contador para os ids dos objetos
+						  //Faz a convers�o das componentes conexas para clusters
+
+
+	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
+		vector <int>::iterator b;
+		for (b = objByCluster.begin(); b != c; b++) {
+			if (*c == *b)
+				break;
+		}
+		if (c == b) {
+			clusters[clusterIndex].idCluster = *c;
+			clusterIndex++;
+		}
+
+
+	}
+	solution->setObjectByCluster(objByCluster);
+	cout << "Cluster Index: " << clusterIndex << endl;
+	count = 0;
+	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
+
+		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
+			if (c->idCluster == *it) {
+				solution->addObject(count + 1, c->idClusterInSolution);
+			}
+		}
+		count++;
+	}
+
+	solutionClusters = solution->getClusters();
+
+
+}
 
 
 ShortSolution *Constructive::getSolution()
@@ -263,70 +327,7 @@ void Constructive::buildMST()
 }
 
 
-void Constructive::showEdgesInSol() {
-	cout << "Following are the edges in the constructed MST\n" << endl;
-	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++)
-		cout << it->getSrc()  << "   -- " << it->getDest() << " == " << it->getWeightEdge() << endl;
-		
-}
 
-void Constructive::cutMST(int numclusters)
-{
-	//sort(candidatesEdges.begin(), candidatesEdges.end(),[](Edge& cmp1, Edge& cmp2)->bool {return cmp1 > cmp2; });
-	system("cls");
-	bool *visited = new bool[numVertex];
-	for (int i = 0; i < numVertex; i++)
-		visited[i] = false;
-
-	int numConvexComp = 0;
-	int i = edgesInSolution.size()-1;
-	int clusterCount = 0;
-
-
-	while (numConvexComp < numclusters) {
-		int src = edgesInSolution[i].getSrc();
-		int dest = edgesInSolution[i].getDest();
-		
-		MSTGraph[src - 1].removeEdge(dest);
-		MSTGraph[dest - 1].removeEdge(src);
-
-		DFS(src, visited,src);
-		DFS(dest, visited, dest);
-
-		
-		cout << src << endl;
-		cout << dest << endl;
-		cout << "--" << endl;
-		numConvexComp++;
-		clusterCount++;
-		i--;
-	}
-
-	//system("cls");
-	cout << "clusters" << endl;
-	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
-		cout << it->getID() <<  " " << it->clusterParent << endl;
-	}
-
-	
-
-	
-}
-
-void Constructive::DFS(int v, bool visited[], int clusterGroup)
-{
-	visited[v] = true;
-	
-	cout << " " << clusterGroup;
-	// Recur for all the vertices adjacent
-	// to this vertex
-	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
-		if (!visited[it->getID()]) {
-			it->clusterParent = clusterGroup;
-			DFS(it->getID(), visited, clusterGroup);
-		}
-	}
-}
 
 void Constructive::unionSETs(int idX, int idY)
 {
@@ -370,6 +371,7 @@ void Constructive::buildGraph(vector <Object*> objects)
 {
 	int i;
 	int j;
+	this->objects = objects;
 	vector <Object*>::iterator it;
 	vector <Object*>::iterator it2;
 	it = objects.begin();
@@ -399,6 +401,7 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 
 		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
 	}
+	cout << dist << endl;
 	return sqrt(dist);
 }
 
@@ -427,7 +430,6 @@ int Edge::getSrc()
 {
 	return this->src;
 }
-
 
 
 
@@ -519,68 +521,149 @@ double No::getWeightEdge(int index)
 	return edges[index].getWeightEdge();
 }
 
-void Constructive::testeCluster()
-{
 
-	srand(time(0));
-	numConvexComponents = Graph.size();
+void Constructive::calculateSilhouette()
+{
+	double dissimilarityA = 0;
+	double dissimilarityB = 0;
+	double s = 0; // Silhueta;
+				  //Para cada Objeto
+	int i = 0;
+	vector <Object*>::iterator it;
+	for ( it = objects.begin(); it != objects.end(); it++, i++) {
+		//Para cada objeto no cluster do objeto I
+		//Calculamos a dissimilaridade do objeto I para todos os obj de seu cluster
+		cout <<  solutionClusters[(*it)->getClusterId()].size()   << endl;
+		if (solutionClusters[(*it)->getClusterId()].size() >= 1) {
+			for (int j = 0; j < solutionClusters[(*it)->getClusterId()].size(); j++) {
+				double distanceToSameCluster = 0;
+				if ((*it)->getId() != solutionClusters[i][j]) {
+					distanceToSameCluster += euclideanDistance(*it, objects[solutionClusters[i][j]]);
+				}
+				dissimilarityA = distanceToSameCluster / (solutionClusters.size() - 1);
+			}
+			//Para cada cluster j
+			for (int j = 0; j < solutionClusters.size(); j++) {
+				double distanceToOtherCluster = 0;
+				double minDissimilarity = numeric_limits<double>::max();
+				//Esse if serve para não compararmos com os obj do mesmo cluster;
+				if (j != objects[i]->getClusterId()) {
+					double auxDist = 0;
+					//Para cada objeto do cluster j, calculamos a dist do objeto it ao objeto[j][k]
+					for (int k = 0; k < solutionClusters[j].size(); k++) {
+						auxDist += euclideanDistance(*it, objects[solutionClusters[j][k]]);
+					}
+					if (minDissimilarity > auxDist) {
+						minDissimilarity = auxDist;
+					}
+				}
+				dissimilarityB = minDissimilarity;
+			}
+
+
+		}
+		//Salvo as dissimilaridades e distancias calculadas
+		(*it)->setDissimilaritySameCluster(dissimilarityA);
+		(*it)->setDissimilarityOtherCluster(dissimilarityB);
+		double maxA_B = (dissimilarityA >= dissimilarityB) ? dissimilarityA : dissimilarityB;
+		double silhueta = (dissimilarityA - dissimilarityB) / maxA_B;
+		s += silhueta;
+	}
+
+	cout << dissimilarityA << endl;
+	cout << dissimilarityB << endl;
+
+	s = s / objects.size();
+
+	silhouette = s;
+
+
+}
+
+
+void Constructive::showEdgesInSol() {
+	cout << "Following are the edges in the constructed MST\n" << endl;
+	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++)
+		cout << it->getSrc() << "   -- " << it->getDest() << " == " << it->getWeightEdge() << endl;
+
+}
+
+void Constructive::cutMST(int numclusters)
+{
+	//sort(candidatesEdges.begin(), candidatesEdges.end(),[](Edge& cmp1, Edge& cmp2)->bool {return cmp1 > cmp2; });
+	system("cls");
+	bool *visited = new bool[numVertex];
+	for (int i = 0; i < numVertex; i++)
+		visited[i] = false;
+
+	int numConvexComp = 0;
+	int i = edgesInSolution.size() - 1;
+	int clusterCount = 0;
+
+
+	while (numConvexComp < numclusters) {
+		int src = edgesInSolution[i].getSrc();
+		int dest = edgesInSolution[i].getDest();
+
+		MSTGraph[src - 1].removeEdge(dest);
+		MSTGraph[dest - 1].removeEdge(src);
+
+		DFS(src, visited, src);
+		DFS(dest, visited, dest);
+
+
+		cout << src << endl;
+		cout << dest << endl;
+		cout << "--" << endl;
+		numConvexComp++;
+		clusterCount++;
+		i--;
+	}
+
+	//system("cls");
+	cout << "clusters" << endl;
+	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+		cout << it->getID() << " " << it->clusterParent << endl;
+	}
+
+
+
+
+}
+
+void Constructive::DFS(int v, bool visited[], int clusterGroup)
+{
+	visited[v] = true;
+
+	cout << " " << clusterGroup;
+	// Recur for all the vertices adjacent
+	// to this vertex
+	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+		if (!visited[it->getID()]) {
+			it->clusterParent = clusterGroup;
+			DFS(it->getID(), visited, clusterGroup);
+		}
+	}
+}
+
+
+bool Constructive::hasCircle()
+{
 	int numVertex = Graph.size();
 	int numEdges = candidatesEdges.size();
-	vector <Edge> auxCandidatesEdges = candidatesEdges;
-	int j = 0;
-	edgesInSolution.reserve(auxCandidatesEdges.size());
-
-
-	while (numConvexComponents > numClusters) {
-		int last = auxCandidatesEdges.size() * rndParameter;
-		//cout << j << endl;
-		j = ceil((rand() % last));
-		int parentX = find(auxCandidatesEdges[j].getSrc());
-		int parentY = find(auxCandidatesEdges[j].getDest());
-		if (parentX != parentY) { //Se os "pais" deles forem os mesmos significa que h� um circulo
-			unionSETs(auxCandidatesEdges[j].getSrc(), auxCandidatesEdges[j].getDest());
-		}
-		auxCandidatesEdges.erase(auxCandidatesEdges.begin() + j);
+	int i;
+	for (i = 0; i < numVertex; ++i)
+	{
+		subsets[i].parent = i;
+		subsets[i].rank = 0;
 	}
-
-
-	int count = 0;;
-	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
-		*c = find(count);
-		count++;
+	i = 0;
+	for (vector <Edge>::iterator it = edgesInSolution.begin(); it != edgesInSolution.end(); it++) {
+		int parentX = find(it->getSrc());
+		int parentY = find(it->getDest());
+		if (parentX == parentY)
+			return true;
+		unionSETs(it->getSrc(), it->getDest());
 	}
-
-
-	cout << "num Convex Comp: " << numConvexComponents << endl;
-	int clusterIndex = 0; // Contador para os ids dos objetos
-						  //Faz a convers�o das componentes conexas para clusters
-
-
-	for (vector <int>::iterator c = objByCluster.begin(); c != objByCluster.end(); c++) {
-		vector <int>::iterator b;
-		for (b = objByCluster.begin(); b != c; b++) {
-			if (*c == *b)
-				break;
-		}
-		if (c == b) {
-			cout << *c << endl;
-			clusters[clusterIndex].idCluster = *c;
-			clusterIndex++;
-		}
-
-
-	}
-
-	cout << "Cluster Index: " << clusterIndex << endl;
-	count = 0;
-	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
-
-		for (vector <struct cluster>::iterator c = clusters.begin(); c != clusters.end(); c++) {
-			if (c->idCluster == *it) {
-				solution->addObject(count + 1, c->idClusterInSolution);
-			}
-		}
-		count++;
-	}
-
+	return false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #pragma once
 #include "Object.h";
+#include "ShortSolution.h"
 
 
 
@@ -18,6 +19,7 @@ public:
 	void setminimaY(double value);
 	double getNewCentroid(int mean, int dimAttr);
 	void showInfo();
+	ShortSolution *getSolution();
 
 	~KMeans();
 private:
@@ -27,5 +29,6 @@ private:
 	vector <Object> means;
 	double maximaX, maximaY;
 	double minimaX, minimaY;
+	ShortSolution *solution;
 };
 

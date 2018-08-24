@@ -114,7 +114,7 @@ void Input::normEntry()
 
 	
 	cout << "------------------------------" << endl;
-	/*for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+/*	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 		cout << "Objeto: " << (*it)->getId() << "Attr: " << (*it)->getNormDoubleAttr(0) << " "<< (*it)->getNormDoubleAttr(1) << endl;
 
 	}*/
@@ -122,6 +122,53 @@ void Input::normEntry()
 	//TO DO: Save norm input to file
 	cout << "Entry normalized" << endl;
 
+
+
+}
+
+void Input::testNorm()
+{
+
+
+	const int numAttr = 2;
+	long double normAttrs[numAttr];
+	long double minDoubleAttrs[numAttr], maxDoubleAttrs[numAttr];
+
+	
+
+	for (int i = 0; i < numAttr; i++) {
+
+		long double minAttr = objects[0]->getOrigDoubleAttr(i);
+		vector <Object*>::iterator it;
+		for (it = objects.begin(); it != objects.end(); ++it) {
+			if (minAttr >(*it)->getOrigDoubleAttr(i)) {
+				minAttr = (*it)->getOrigDoubleAttr(i);
+			}
+		}
+
+
+		minDoubleAttrs[i] = getMinDoubleAttr(i);
+		maxDoubleAttrs[i] = getMaxDoubleAttr(i);
+	}
+
+
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		normAttrs[0] = (((*it)->getOrigDoubleAttr(0) - minDoubleAttrs[0]) / (maxDoubleAttrs[0] - minDoubleAttrs[0]));
+		(*it)->testePesoX = normAttrs[0];
+		normAttrs[1] = ((*it)->getOrigDoubleAttr(1) - minDoubleAttrs[1]) / (maxDoubleAttrs[1] - minDoubleAttrs[1]);
+		(*it)->testePesoY = normAttrs[1];
+	}
+
+
+
+	cout << "------------------------------" << endl;
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+	cout << "Objeto: " << (*it)->getId() << "Attr: " << (*it)->testePesoX << " "<< (*it)->testePesoY << endl;
+
+	}
+
+	//TO DO: Save norm input to file
+	cout << "Entry normalized" << endl;
 
 
 }

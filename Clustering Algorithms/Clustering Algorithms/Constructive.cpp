@@ -208,12 +208,12 @@ void Constructive::testeCluster()
 		
 		int k = ceil((rand() % (int)(sumDist*1000)));
 		int sum = 0;
-		cout << "k=" << k << endl << "sumDist=" << sumDist * 1000 << endl;
+		//cout << "k=" << k << endl << "sumDist=" << sumDist * 1000 << endl;
 		for (j = 0; sum + (1 - auxCandidatesEdges[j].getWeightEdge()) * 1000 < k && j < last; j++) {
 			sum += (1 - auxCandidatesEdges[j].getWeightEdge()) * 1000;
-			cout  << "j=" << j << "\tw=" << auxCandidatesEdges[j].getWeightEdge() << 
+			/*cout  << "j=" << j << "\tw=" << auxCandidatesEdges[j].getWeightEdge() << 
 				"\t1-w=" << 1-auxCandidatesEdges[j].getWeightEdge() << 
-				"\tparc=" << sum + (1-auxCandidatesEdges[j].getWeightEdge())*1000 << "\tk=" << k << endl << endl;
+				"\tparc=" << sum + (1-auxCandidatesEdges[j].getWeightEdge())*1000 << "\tk=" << k << endl << endl;*/
 		}
 
 		int parentX = find(auxCandidatesEdges[j].getSrc());
@@ -256,7 +256,7 @@ void Constructive::testeCluster()
 
 	}
 	solution->setObjectByCluster(objByCluster);
-	cout << "Cluster Index: " << clusterIndex << endl;
+	//cout << "Cluster Index: " << clusterIndex << endl;
 	count = 0;
 	for (vector <int>::iterator it = objByCluster.begin(); it != objByCluster.end(); it++) {
 
@@ -377,6 +377,7 @@ void Constructive::buildGraph(vector <Object*> objects)
 	it = objects.begin();
 	for (i = 0; i < numVertex; i++) {
 		it2 = it;
+		it2++;
 		//cria um novo No
 		No no = No();
 		no.setID((*it)->getId());
@@ -396,12 +397,16 @@ void Constructive::buildGraph(vector <Object*> objects)
 double Constructive::euclideanDistance(Object *a, Object *b)
 {
 	double dist = 0.0;
+	//cout << " Obj a " << a->getId() << " Obj b " << b->getId() << endl;
 	// two is the dimension of the object
 	for (int i = 0; i < 2; i++) {
 
 		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
+		//cout << " Obj a " << a->getNormDoubleAttr(i) << " Obj b " << b->getNormDoubleAttr(i) << endl;
 	}
-	cout << dist << endl;
+	
+	
+	//cout << dist << endl;
 	return sqrt(dist);
 }
 

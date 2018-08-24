@@ -173,6 +173,12 @@ public:
 	void setDissimilarityOtherCluster(double d);
 	double getDissimilarityOtherCluster();
 
+
+
+	long double testePesoX;
+	long double testePesoY;
+
+
 private:
 
 	// orig = original , norm = normalized, simi = similarity, pos = position
@@ -191,6 +197,7 @@ private:
 
 	double dissimilaritySameCluster;
 	double dissimilarityOtherClusters;
+
 
 
 

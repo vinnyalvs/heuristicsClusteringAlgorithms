@@ -57,6 +57,8 @@ public:
 	*/
 	void normEntry();
 
+	void testNorm();
+
 	double getMaxDoubleAttr(int index);
 
 	double getMaxNormDoubleAttr(int index);

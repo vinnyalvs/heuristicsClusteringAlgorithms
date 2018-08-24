@@ -17,13 +17,14 @@ int main()
 	Input* i = Input::getInstance();
     i->readObjectInstances("matrixO.txt");
 	i->normEntry();
+	//i->testNorm();
 	int size = i->getNumObjects();
 
 	//Inicializa Construtivo, calcula peso das arestas  
-	Constructive *c = new Constructive(size, 15);
+	Constructive *c = new Constructive(size, 25);
 	c->buildGraph(i->getObjects());
 	c->orderEdges();
-	c->setRndParemeter(0.005);
+	c->setRndParemeter(0.01);
 	//c->buildClusters();
 	c->testeCluster();
 	

@@ -50,6 +50,7 @@ private:
 	int grauEntrada;
 	int grauSaida;
 	double pesoX;
+	
 	double pesoY;
 	vector <Edge> edges;
 	
@@ -64,7 +65,9 @@ public:
 	void setGrau(int g);
 	void setPesoX(float pesoX);
 	void setPesoY(float pesoY);
+
 	
+
 	void setNumEdges(int size);
 	void addEdge(int id, double pesoA, int idDest);
 	vector <Edge> getEdges();

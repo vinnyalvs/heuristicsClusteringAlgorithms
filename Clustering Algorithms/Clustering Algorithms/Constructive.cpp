@@ -526,6 +526,16 @@ double No::getWeightEdge(int index)
 	return edges[index].getWeightEdge();
 }
 
+double No::getDistance(int id) {
+	for (vector <Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+		//cout << it->getDest() << "-" << id << endl;
+		if (it->getDest() == id) {
+			return it->getWeightEdge();
+		}
+	}
+	return 0.0;
+}
+
 
 void Constructive::calculateSilhouette()
 {
@@ -649,6 +659,36 @@ void Constructive::DFS(int v, bool visited[], int clusterGroup)
 			DFS(it->getID(), visited, clusterGroup);
 		}
 	}
+}
+
+void Constructive::calculateSum()
+{
+	//Para cada cluster i com k objetos
+	vector <double> costClusters;
+	costClusters.assign(solutionClusters.size(), 0);
+	system("cls");
+	for (int i = 0; i < solutionClusters.size(); i++) {
+		//Para cada objeto j do cluster i
+		double soma = 0;
+		for (int j = 0; j < solutionClusters[i].size(); j++) {
+			cout << "cluster " << i << " size: " << solutionClusters[i].size() << endl;
+			for (int k = j; k < solutionClusters[i].size(); k++) {
+				if (j != k) {
+					cout << "J: " << j << " K " << k << endl;
+					double a = Graph[solutionClusters[i][j]].getDistance(solutionClusters[i][k]);
+					costClusters[i] += a;
+					cout << a << endl;
+				}
+			}
+		}
+		//cout << costClusters[i] << endl;
+	}
+
+		
+			//Somatorio das distancias do obj j aos outros k-1 objetos do cluster
+				// soma += distancia obj j
+
+
 }
 
 

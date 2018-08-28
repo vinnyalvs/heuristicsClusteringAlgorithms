@@ -21,13 +21,13 @@ int main()
 	int size = i->getNumObjects();
 
 	//Inicializa Construtivo, calcula peso das arestas  
-	Constructive *c = new Constructive(size, 25);
+	Constructive *c = new Constructive(size, 15);
 	c->buildGraph(i->getObjects());
 	c->orderEdges();
 	c->setRndParemeter(0.01);
 	//c->buildClusters();
 	c->testeCluster();
-	
+	c->calculateSum();
 
 	ShortSolution *sol = c->getSolution();
 	sol->showSolution();

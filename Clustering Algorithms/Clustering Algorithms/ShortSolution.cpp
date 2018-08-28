@@ -9,6 +9,7 @@ ShortSolution::ShortSolution(int numObj, int numClusters)
 	clusters.reserve(numClusters);
 	vector <int> a;
 	clusters.assign(numClusters, a);
+	clusterCost.assign(numClusters, 0.0);
 	for (int i = 0; i < clusters.size(); i++) {
 		clusters[i].reserve(numObj);
 	}

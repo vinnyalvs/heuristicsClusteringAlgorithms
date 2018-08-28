@@ -32,6 +32,7 @@ public:
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
 	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it
+	vector <double> clusterCost;
 	int **objByCluster;
 	int id; // solution id
 	int numObj;

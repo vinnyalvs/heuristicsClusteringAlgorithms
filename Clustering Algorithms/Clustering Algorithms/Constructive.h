@@ -67,12 +67,13 @@ public:
 	void setPesoY(float pesoY);
 
 	
-
+	
 	void setNumEdges(int size);
 	void addEdge(int id, double pesoA, int idDest);
 	vector <Edge> getEdges();
 	void removeEdge(int id);
 	double getWeightEdge(int index);
+	double getDistance(int id);
 };
 
 class Constructive
@@ -98,6 +99,9 @@ public:
 	void showEdgesInSol();
 	void cutMST(int numclusters);
 	void DFS(int v, bool visited[],int clusterGroup);
+
+	void calculateSum();
+
 private:
 	double silhouette;
 	vector <Object*> objects;

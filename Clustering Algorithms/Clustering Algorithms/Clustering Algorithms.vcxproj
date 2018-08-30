@@ -146,9 +146,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constructive.h" />
+    <ClInclude Include="Edge.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="KMeans.h" />
     <ClInclude Include="LocalSearch.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ShortSolution.h" />
     <ClInclude Include="stdafx.h" />
@@ -158,9 +160,11 @@
   <ItemGroup>
     <ClCompile Include="Clustering Algorithms.cpp" />
     <ClCompile Include="Constructive.cpp" />
+    <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="KMeans.cpp" />
     <ClCompile Include="LocalSearch.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ShortSolution.cpp" />
     <ClCompile Include="stdafx.cpp">

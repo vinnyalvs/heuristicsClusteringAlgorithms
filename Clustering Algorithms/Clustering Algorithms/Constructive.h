@@ -1,5 +1,6 @@
 #pragma once
 #include "ShortSolution.h"
+#include "Node.h"
 #include <random>
 #include <algorithm>
 #include <cstdlib>
@@ -14,67 +15,9 @@ enum {
 using namespace std;
 
 
-class Edge {
-private:
-	double pesoAresta;
-	int dest; // no destino
-	int src;
-public:
-	Edge(int iD_No, float pesoA, int idHead);
-	~Edge();
-	double getWeightEdge();
-	int getDest();
-	int getSrc();
-	void setWeightEdge(float peso);
-	bool operator<(const  Edge & other) //(1)
-	{
-		return pesoAresta < other.pesoAresta;
-	}
 
-	bool operator > (Edge& cmp1)
-	{
-		//Do your own calculations here
-		if (cmp1.pesoAresta < pesoAresta)
-		{
-			return true;
-		}
 
-		return false;
-	}
-};
 
-class No {
-private:
-	int id;
-	int grau;
-	int grauEntrada;
-	int grauSaida;
-	double pesoX;
-	
-	double pesoY;
-	vector <Edge> edges;
-	
-public:
-	int clusterParent;
-	No();
-	~No();
-	int getID();
-	int getGrau();
-	void setID(int id);
-	int	 getId();
-	void setGrau(int g);
-	void setPesoX(float pesoX);
-	void setPesoY(float pesoY);
-
-	
-	
-	void setNumEdges(int size);
-	void addEdge(int id, double pesoA, int idDest);
-	vector <Edge> getEdges();
-	void removeEdge(int id);
-	double getWeightEdge(int index);
-	double getDistance(int id);
-};
 
 class Constructive
 {
@@ -110,8 +53,8 @@ private:
 	double **mat;
 	int numVertex;
 	double rndParameter;
-	vector <No> Graph;
-	vector <No> MSTGraph;
+	vector <Node> Graph;
+	vector <Node> MSTGraph;
 	vector <Edge> candidatesEdges;
 	vector <Edge> edgesInSolution;
 	vector <int> parents;

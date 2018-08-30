@@ -7,6 +7,7 @@
 #include  "KMeans.h"
 #include  "ShortSolution.h"
 #include  "LocalSearch.h"
+#include "Utils.h"
 #include "math.h"
 #include <random>
 using namespace std;
@@ -15,22 +16,25 @@ int main()
 {
 	//Inicializa Instancia, le o arquivo e o normaliza
 	Input* i = Input::getInstance();
-    i->readObjectInstances("matrixO.txt");
+    i->readObjectInstances("DS1-maronna.txt");
 	i->normEntry();
 	//i->testNorm();
 	int size = i->getNumObjects();
 
 	//Inicializa Construtivo, calcula peso das arestas  
-	Constructive *c = new Constructive(size, 15);
+	Constructive *c = new Constructive(size, 4);
 	c->buildGraph(i->getObjects());
 	c->orderEdges();
 	c->setRndParemeter(0.01);
 	//c->buildClusters();
 	c->testeCluster();
-	c->calculateSum();
-
+	//c->calculateSum();
+	c->showGraph();
 	ShortSolution *sol = c->getSolution();
-	sol->showSolution();
+	//sol->showSolution();
+	//sol->calculateCostClusters();
+	Utils *util = new Utils();
+	//util->testShowSolution(sol);
 
 	
 	

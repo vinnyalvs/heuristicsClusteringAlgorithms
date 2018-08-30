@@ -9,7 +9,7 @@ ShortSolution::ShortSolution(int numObj, int numClusters)
 	clusters.reserve(numClusters);
 	vector <int> a;
 	clusters.assign(numClusters, a);
-	clusterCost.assign(numClusters, 0.0);
+	costClusters.assign(numClusters, 0.0);
 	for (int i = 0; i < clusters.size(); i++) {
 		clusters[i].reserve(numObj);
 	}
@@ -21,7 +21,8 @@ ShortSolution::ShortSolution(int numObj, int numClusters)
 
 ShortSolution::~ShortSolution()
 {
-
+	
+	
 }
 
 void ShortSolution::addObject(int objectId, int clusterId)
@@ -171,6 +172,47 @@ void ShortSolution::showSolution()
 void ShortSolution::setObjectByCluster(vector<int> objectByCluster)
 {
 	this->objectByCluster = objectByCluster;
+}
+
+void ShortSolution::setGraph(vector<Node>graph)
+{
+	this->graph = graph;
+
+}
+
+vector<Node> ShortSolution::getGraph()
+{
+	return graph;
+}
+
+void ShortSolution::calculateCostClusters()
+{
+	//Para cada cluster i com k objetos
+	vector <double> costClusters;
+	costClusters.assign(clusters.size(), 0);
+	for (int i = 0; i < clusters.size(); i++) {
+		//Para cada objeto j Node cluster i
+		double soma = 0;
+		cout << "-----------------" << endl;
+		for (int j = 0; j < clusters[i].size(); j++) {
+			//Somatorio das distancias do obj j aos outros k-1 objetos do cluster
+			// soma += distancia obj j
+			for (int k = j; k < clusters[i].size(); k++) {
+				if (j != k) {
+					cout << "J: " << j << " K " << k << endl;
+					double a = graph[clusters[i][j]].getDistance(clusters[i][k]);
+					soma += a;
+					cout << a << endl;
+				}
+			}
+		}
+		costClusters[i] = soma;
+		cout << "cluster " << i << " size: " << clusters[i].size() << endl;
+		cout << "Custo CLuster i: " << costClusters[i] << endl;
+		cout << "-----------------" << endl;
+		//cout << costClusters[i] << endl;
+	}
+
 }
 
 

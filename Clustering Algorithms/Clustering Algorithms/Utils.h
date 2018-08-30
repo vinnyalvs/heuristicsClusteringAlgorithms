@@ -1,8 +1,10 @@
 #pragma once
+#include "ShortSolution.h"
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "ShortSolution.h"
+#include <cstdlib>
+
 
 using namespace std;
 
@@ -10,14 +12,14 @@ class Utils
 {
 public:
 	string colorTable(int colorIndex);
-	void showSolution(ShortSolution * solution);
+	void showSolution(ShortSolution *solution);
+	void testShowSolution(ShortSolution *solution);
 
 
 	Utils();
 	~Utils();
+private:
+	int a;
 };
 
 
-//
-// Created by edson on 12/06/18.
-//

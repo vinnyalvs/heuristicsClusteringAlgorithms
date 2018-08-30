@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Object.h"
 #include <limits>
+#include "Node.h"
 using namespace std;
 class ShortSolution
 {
@@ -22,17 +23,16 @@ public:
 	void setObjects(vector<Object*> objs);
 	vector <vector<int>> getClusters();
 	void showSolution();
-	double calculateIntraClusterDistance(int clusterId);
-	double calculateInterclusterDistance(int clusterId);
-	double calculateRatio(int clusterId);
 	void setObjectByCluster(vector <int> objectByCluster);
-	
+	void setGraph(vector <Node> graph);
+	vector <Node> getGraph();
+	void calculateCostClusters();
 
 
 private:
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
 	vector <vector<int>> clusters; //for each cluster i have a subgroup of objects in it
-	vector <double> clusterCost;
+	vector <double> costClusters;
 	int **objByCluster;
 	int id; // solution id
 	int numObj;
@@ -47,5 +47,6 @@ private:
 	//The clusterization with the best ratio
 	vector <double> ratios;
 	vector <Object*> objs;
+	vector <Node> graph;
 };
 

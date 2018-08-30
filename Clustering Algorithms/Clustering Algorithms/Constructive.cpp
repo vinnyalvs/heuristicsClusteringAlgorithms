@@ -47,7 +47,7 @@ Constructive::~Constructive()
 
 void Constructive::showGraph()
 {
-	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+	for (vector <Node>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
 		vector <Edge> edge = it->getEdges();
 		cout << it->getID() << "edges" << endl;
 		for (vector <Edge>::iterator a = edge.begin(); a != edge.end(); a++) {
@@ -60,7 +60,7 @@ void Constructive::showGraph()
 
 void Constructive::orderEdges()
 {
-	for (vector <No>::iterator it = Graph.begin(); it != Graph.end(); it++) {
+	for (vector <Node>::iterator it = Graph.begin(); it != Graph.end(); it++) {
 		vector <Edge> edge = it->getEdges();
 		for (vector <Edge>::iterator a = edge.begin() ; a != edge.end(); a++) {
 			candidatesEdges.push_back(*a);
@@ -107,7 +107,7 @@ void Constructive::buildClusters()
 	}
 
 	//Value: divide 100% pela porcentagem que a aresta corresponde na soma total
-	//para cada aresta com peso diferente de zero, colocamos no array o value dividido por uma "normalizacao" (pow) acresido com a somaAcumulada
+	//para cada aresta com peso diferente de zero, colocamos Node array o value dividido por uma "Nodermalizacao" (pow) acresido com a somaAcumulada
 	int c = 0;
 	for (vector <Edge>::iterator it = candidatesEdges.begin(); it != candidatesEdges.end(); it++) {
 		double value = (100 / (it->getWeightEdge() / sum));
@@ -126,7 +126,7 @@ void Constructive::buildClusters()
 	int j;
 
 
-	//Enquanto existem mais componentes conexas que clusters, sorteamos um valor entre 0 e sumprob, para cada elemento do array, se o valor sorteado for menor que esse elemento
+	//Enquanto existem mais componentes conexas que clusters, sorteamos um valor entre 0 e sumprob, para cada elemento do array, se o valor sorteado for meNoder que esse elemento
 	//Tentamos montar a AGM
 	while (numConvexComponents > numClusters) {
 		int last = candidatesEdges.size() * rndParameter;
@@ -153,7 +153,7 @@ void Constructive::buildClusters()
 		count++;
 	}
 	//Faz a conversão das componentes conexas para clusters, para que seja possível guardar essas informações na solution
-	//Basicamente para cada elemento distinto do ObjByCluster, define para a componenteConexa um id no array clusters
+	//Basicamente para cada elemento distinto do ObjByCluster, define para a componenteConexa um id Node array clusters
 	int clusterIndex = 0; // Contador para os ids dos objetos
 	int conta = 0;
 	
@@ -378,20 +378,39 @@ void Constructive::buildGraph(vector <Object*> objects)
 	for (i = 0; i < numVertex; i++) {
 		it2 = it;
 		it2++;
-		//cria um novo No
-		No no = No();
-		no.setID((*it)->getId());
-		no.setPesoX((*it)->getNormDoubleAttr(0));
-		no.setPesoY((*it)->getNormDoubleAttr(1));
-		Graph.push_back(no);
-		MSTGraph.push_back(no);
-		//para cada No calcula a distancia para os objetos da instancia
+		//cria um Nodevo Node
+		Node node = Node();
+		node.setID((*it)->getId());
+		node.setPesoX((*it)->getNormDoubleAttr(0));
+		node.setPesoY((*it)->getNormDoubleAttr(1));
+		if ((*it)->getId() == 58) {
+			cout << (*it)->getNormDoubleAttr(0) << endl;
+			cout << (*it)->getNormDoubleAttr(1) << endl;
+		}
+		Graph.push_back(node);
+		MSTGraph.push_back(node);
+		//para cada Node calcula a distancia para os objetos da instancia
 		for (j = i+1; j < numVertex; j++) {
-			Graph[i].addEdge(no.getID(), euclideanDistance(*it, *it2),j);
+			//if (j = 57) {
+				cout << "--" << endl;
+				cout << i << endl;
+				cout << j << endl;
+				cout << (*it)->getId() << endl;
+				cout << (*it2)->getId() << endl;
+				cout << euclideanDistance(*it, *it2) << endl;
+				cout << "--" << endl;
+				if (i = 57)
+					break;
+			//}
+			Graph[i].addEdge(node.getID(), euclideanDistance(*it, *it2),j);
 			++it2;
 		}
 		++it;
 	}
+//	cout << Graph[58 - 1].getX() << endl;
+//	cout << Graph[58 - 1].getY() << endl;
+	//Em Graph o indice zero contém o nó de id = 1
+	solution->setGraph(Graph);
 }
 
 double Constructive::euclideanDistance(Object *a, Object *b)
@@ -402,7 +421,7 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 	for (int i = 0; i < 2; i++) {
 
 		dist += pow((a->getNormDoubleAttr(i) - b->getNormDoubleAttr(i)), 2);
-		//cout << " Obj a " << a->getNormDoubleAttr(i) << " Obj b " << b->getNormDoubleAttr(i) << endl;
+		//cout << " Obj a " << a->getNodermDoubleAttr(i) << " Obj b " << b->getNodermDoubleAttr(i) << endl;
 	}
 	
 	
@@ -410,131 +429,8 @@ double Constructive::euclideanDistance(Object *a, Object *b)
 	return sqrt(dist);
 }
 
-Edge::Edge(int iD_No, float pesoA, int idDest)
-{
-	this->dest = idDest;  // no destino 
-	this->src = iD_No; // no origem
-	pesoAresta = pesoA;
-}
-
-Edge::~Edge()
-{
-}
-
-double Edge::getWeightEdge()
-{
-	return this->pesoAresta;
-}
-
-int Edge::getDest()
-{
-	return this->dest;
-}
-
-int Edge::getSrc()
-{
-	return this->src;
-}
 
 
-
-void Edge::setWeightEdge(float peso)
-{
-	this->pesoAresta = peso;
-}
-
-
-No::No()
-{
-}
-
-No::~No()
-{
-}
-
-int No::getID()
-{
-	return this->id;
-}
-
-int No::getGrau()
-{
-	return this->grau;
-}
-
-void No::setID(int id)
-{
-	this->id = id;
-}
-
-int No::getId()
-{
-	return this->id ;
-}
-
-void No::setGrau(int g)
-{
-	this->grau = g;
-}
-
-void No::setPesoX(float pesoX)
-{
-	this->pesoX = pesoX;
-}
-
-void No::setPesoY(float pesoY)
-{
-	this->pesoY = pesoY;
-}
-
-void No::setNumEdges(int size)
-{
-	edges.reserve(size);
-}
-
-void No::addEdge(int id, double pesoA, int idDest)
-{
-	Edge* a = new Edge(id, pesoA, idDest);
-	if (id == id)
-		grau += 2;
-	else
-		grau += 1;
-	edges.push_back(*a);
-}
-
-vector <Edge> No::getEdges()
-{
-	return edges;
-}
-
-void No::removeEdge(int id)
-{
-	
-	int count = 0;
-	for (vector <Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
-		//cout << it->getDest() << "-" << id << endl;
-		if (it->getDest() == id) {
-			break;
-		}
-		count++;
-	}
-	edges.erase(edges.begin() + count);
-}
-
-double No::getWeightEdge(int index)
-{
-	return edges[index].getWeightEdge();
-}
-
-double No::getDistance(int id) {
-	for (vector <Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
-		//cout << it->getDest() << "-" << id << endl;
-		if (it->getDest() == id) {
-			return it->getWeightEdge();
-		}
-	}
-	return 0.0;
-}
 
 
 void Constructive::calculateSilhouette()
@@ -546,7 +442,7 @@ void Constructive::calculateSilhouette()
 	int i = 0;
 	vector <Object*>::iterator it;
 	for ( it = objects.begin(); it != objects.end(); it++, i++) {
-		//Para cada objeto no cluster do objeto I
+		//Para cada objeto Node cluster do objeto I
 		//Calculamos a dissimilaridade do objeto I para todos os obj de seu cluster
 		cout <<  solutionClusters[(*it)->getClusterId()].size()   << endl;
 		if (solutionClusters[(*it)->getClusterId()].size() >= 1) {
@@ -637,7 +533,7 @@ void Constructive::cutMST(int numclusters)
 
 	//system("cls");
 	cout << "clusters" << endl;
-	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+	for (vector <Node>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
 		cout << it->getID() << " " << it->clusterParent << endl;
 	}
 
@@ -653,7 +549,7 @@ void Constructive::DFS(int v, bool visited[], int clusterGroup)
 	cout << " " << clusterGroup;
 	// Recur for all the vertices adjacent
 	// to this vertex
-	for (vector <No>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
+	for (vector <Node>::iterator it = MSTGraph.begin(); it != MSTGraph.end(); it++) {
 		if (!visited[it->getID()]) {
 			it->clusterParent = clusterGroup;
 			DFS(it->getID(), visited, clusterGroup);
@@ -666,27 +562,31 @@ void Constructive::calculateSum()
 	//Para cada cluster i com k objetos
 	vector <double> costClusters;
 	costClusters.assign(solutionClusters.size(), 0);
-	system("cls");
 	for (int i = 0; i < solutionClusters.size(); i++) {
-		//Para cada objeto j do cluster i
+		//Para cada objeto j Node cluster i
 		double soma = 0;
+		cout << "-----------------" << endl;
 		for (int j = 0; j < solutionClusters[i].size(); j++) {
-			cout << "cluster " << i << " size: " << solutionClusters[i].size() << endl;
+			//Somatorio das distancias do obj j aos outros k-1 objetos do cluster
+			// soma += distancia obj j
 			for (int k = j; k < solutionClusters[i].size(); k++) {
 				if (j != k) {
-					cout << "J: " << j << " K " << k << endl;
+					//cout << "J: " << j << " K " << k << endl;
 					double a = Graph[solutionClusters[i][j]].getDistance(solutionClusters[i][k]);
-					costClusters[i] += a;
-					cout << a << endl;
+					soma += a;
+					//cout << a << endl;
 				}
 			}
 		}
+		costClusters[i] = soma;
+		cout << "cluster " << i << " size: " << solutionClusters[i].size() << endl;
+		cout << "Custo CLuster i: "  << costClusters[i]  << endl;
+		cout << "-----------------" << endl;
 		//cout << costClusters[i] << endl;
 	}
 
 		
-			//Somatorio das distancias do obj j aos outros k-1 objetos do cluster
-				// soma += distancia obj j
+		
 
 
 }
